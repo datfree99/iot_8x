@@ -1,0 +1,91 @@
+.auth .bg-login-image {
+  background: url("/assets/images/vinhhalong1.jpg");
+  background-position: center;
+  background-size: cover;
+}
+
+.custom-style .sidebar .nav-item .nav-link i {
+  font-size: 1rem;
+}
+.custom-style .breadcrumb {
+  margin: 0;
+  background: none;
+  padding: 0;
+}
+.custom-style .sidebar #sidebarToggle::after {
+  font-weight: 900;
+  content: "\f104";
+  font-family: "Font Awesome 5 Pro";
+  margin-right: 0.1rem;
+}
+.custom-style .sidebar.toggled #sidebarToggle::after {
+  content: "\f105";
+  font-family: "Font Awesome 5 Pro";
+  margin-left: 0.25rem;
+}
+.custom-style .pagination {
+  justify-content: end;
+  margin: 0;
+}
+@media (min-width: 768px) {
+  .custom-style .sidebar .nav-item .nav-link span {
+    font-size: 1rem;
+  }
+}
+
+.required-label {
+  color: red;
+}
+
+.error {
+  color: red;
+  font-size: 14px;
+  font-style: italic;
+}
+
+.icon {
+  font-size: 18px;
+}
+
+.icon-edit {
+  color: #0a58ca;
+  cursor: pointer;
+}
+
+.icon-delete {
+  color: red;
+  cursor: pointer;
+}
+
+.image-preview {
+  width: 200px;
+  height: 200px;
+}
+
+.show-image-preview {
+  width: 100px;
+  height: 100px;
+}
+
+.preview-slider {
+  cursor: pointer;
+  width: 100%;
+  height: 450px;
+  border: 5px #00a1ff dashed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 40px;
+  color: #00a1ff;
+  flex-direction: column;
+}
+.preview-slider .text-preview {
+  display: block;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.layout-admin-custom .breadcrumb-header .breadcrumb {
+  margin: 0;
+  font-size: 20px;
+}
