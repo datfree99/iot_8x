@@ -210,7 +210,7 @@
                                                     <div class="img-inner image-glow image-zoom dark">
                                                         <img width="800" height="533"
                                                              src="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%20800%20533%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3C%2Fsvg%3E"
-                                                             data-src="{{$aboutUs->image}}"
+                                                             data-src="{{$aboutUs->image ?? ""}}"
                                                              class="lazy-load attachment-large size-large"
                                                              alt="{{$aboutUs->renderTitle()}}" loading="lazy" srcset=""
                                                              sizes="(max-width: 800px) 100vw, 800px">

@@ -47,6 +47,18 @@ class PostModel extends Model
     protected $table = 'posts';
     protected $guarded = ['id'];
 
+    protected $fillable = [
+        'category_id',
+        'slug',
+        'title',
+        'description',
+        'contents',
+        'image',
+        'seo_title',
+        'seo_description',
+        'seo_keywords',
+        'status',
+    ];
     const STATUS_DRAFT = 'draft';
     const STATUS_ACTIVE = 'active';
     const STATUS_INACTIVE = 'inactive';
