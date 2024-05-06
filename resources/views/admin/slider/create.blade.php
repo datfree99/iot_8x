@@ -39,7 +39,7 @@
                @endif
            </div>
            <div class="text-center mb-5 mt-5">
-               <a href="{{route('admin.product.index')}}" class="btn btn-secondary">Hủy</a>
+               <a href="{{route('admin.slider.index')}}" class="btn btn-secondary">Hủy</a>
                <button type="submit" class="btn btn-primary">Lưu</button>
            </div>
            {!! Form::close() !!}
