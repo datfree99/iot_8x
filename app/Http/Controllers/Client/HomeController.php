@@ -16,13 +16,11 @@ class HomeController extends Controller
         $category = CategoryModel::where('key', config('category.list_categories.about_us.key'))
             ->select(['id'])
             ->first();
-        $aboutUs = collect();
+        $aboutUs = new PostModel();
         if ($category) {
             $aboutUs = PostModel::where('category_id' ,$category->id)
                 ->first();
         }
-
-
 
         return view('client.home', compact('sliders'))
             ->with('aboutUs', $aboutUs);
