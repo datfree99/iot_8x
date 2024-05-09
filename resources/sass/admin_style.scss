@@ -89,4 +89,8 @@
     .breadcrumb-item::before {
         font-family: "Font Awesome 5 Pro";
     }
+
+    textarea.form-control {
+        height: 100px;
+    }
 }

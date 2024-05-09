@@ -5,17 +5,17 @@ use Diglactic\Breadcrumbs\Generator as BreadcrumbTrail;
 
 
 Breadcrumbs::for('admin.dashboard', function (BreadcrumbTrail $trail) {
-    $trail->push('Dashboard', route('admin.dashboard'));
+    $trail->push(trans('label.dashboard'), route('admin.dashboard'));
 });
 
 Breadcrumbs::for('admin.category.index', function (BreadcrumbTrail $trail) {
     $trail->parent('admin.dashboard');
-    $trail->push('Categories', route('admin.category.index'));
+    $trail->push(trans('label.categories'), route('admin.category.index'));
 });
 
 Breadcrumbs::for('admin.product.index', function (BreadcrumbTrail $trail) {
     $trail->parent('admin.dashboard');
-    $trail->push('Sản phẩm', route('admin.product.index'));
+    $trail->push(trans('label.products'), route('admin.product.index'));
 });
 
 Breadcrumbs::for('admin.product.create', function (BreadcrumbTrail $trail) {
@@ -35,12 +35,12 @@ Breadcrumbs::for('admin.about-us', function (BreadcrumbTrail $trail) {
 
 Breadcrumbs::for('admin.slider.index', function (BreadcrumbTrail $trail) {
     $trail->parent('admin.dashboard');
-    $trail->push('Slider', route('admin.slider.index'));
+    $trail->push(trans('label.sliders'), route('admin.slider.index'));
 });
 
 Breadcrumbs::for('admin.slider.create', function (BreadcrumbTrail $trail) {
     $trail->parent('admin.slider.index');
-    $trail->push(trans('label.update_slider'));
+    $trail->push(trans('label.create_slider'));
 });
 
 Breadcrumbs::for('admin.slider.edit', function (BreadcrumbTrail $trail) {
@@ -50,15 +50,15 @@ Breadcrumbs::for('admin.slider.edit', function (BreadcrumbTrail $trail) {
 
 Breadcrumbs::for('admin.post.index', function (BreadcrumbTrail $trail){
     $trail->parent('admin.dashboard');
-    $trail->push('Bài viết', route('admin.post.index'));
+    $trail->push('Posts', route('admin.post.index'));
 });
 
 Breadcrumbs::for('admin.post.create', function (BreadcrumbTrail $trail){
-    $trail->parent('admin.dashboard');
+    $trail->parent('admin.post.index');
     $trail->push('Thêm mới bài viết');
 });
 
 Breadcrumbs::for('admin.post.edit', function (BreadcrumbTrail $trail){
-    $trail->parent('admin.dashboard');
+    $trail->parent('admin.post.index');
     $trail->push('Cập nhật bài viết');
 });

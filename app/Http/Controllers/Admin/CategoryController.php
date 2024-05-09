@@ -42,7 +42,7 @@ class CategoryController extends Controller
             'name_vi' => $request->get('name_vi'),
         ]);
 
-        return redirect()->back()->with('success', 'Thêm mới danh mục thành công');
+        return redirect()->back()->with('success', trans('label.create_success'));
     }
 
     public function edit($category)
@@ -83,7 +83,7 @@ class CategoryController extends Controller
             'name_vi' => $request->get('name_vi'),
         ]);
 
-        session()->flash('success', "Cập nhật danh mục thành công");
+        session()->flash('success', trans('label.updated_success'));
         return response()->json([
             'success' => true,
         ]);
@@ -92,10 +92,19 @@ class CategoryController extends Controller
 
     public function destroy($category)
     {
+
         $category = CategoryModel::findOrFail($category);
 
+        if ($category->children->isNotEmpty()){
+            foreach ($category->children as $child) {
+                $child->update([
+                    'parent_id' => $category->parent_id
+                ]);
+            }
+        }
+
         $category->delete();
-        session()->flash('success', 'Xóa danh mục thành công');
+        session()->flash('success', trans('label.deleted_success'));
         return response()->json([
             'success' => true,
         ]);

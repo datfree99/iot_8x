@@ -22,6 +22,10 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|SliderModel whereRedirect($value)
  * @method static \Illuminate\Database\Eloquent\Builder|SliderModel whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|SliderModel whereUpdatedAt($value)
+ * @property string|null $title_vi
+ * @property string|null $title_en
+ * @method static \Illuminate\Database\Eloquent\Builder|SliderModel whereTitleEn($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SliderModel whereTitleVi($value)
  * @mixin \Eloquent
  */
 class SliderModel extends Model

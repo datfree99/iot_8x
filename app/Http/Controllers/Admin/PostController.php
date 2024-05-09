@@ -21,9 +21,15 @@ class PostController extends Controller
             PostModel::STATUS_ACTIVE => 'Hiển thị bài viết',
             PostModel::STATUS_INACTIVE => 'Ẩn bài viết'
         ];
+        $cateUs = CategoryModel::where('key', config('category.list_categories.about_us.key'))
+            ->first();
 
 
         $posts = PostModel::query();
+
+        if ($cateUs) {
+            $posts->where('category_id', '<>', $cateUs->id);
+        }
 
         if ($request->get('search')) {
             $posts = $posts->where('title', 'like', '%' . $request->search . '%');;
@@ -112,8 +118,10 @@ class PostController extends Controller
             PostModel::STATUS_ACTIVE => 'Hiển thị bài viết',
             PostModel::STATUS_INACTIVE => 'Ẩn bài viết'
         ];
-
+        $categories = CategoryModel::whereIn('key', CategoryModel::GROUP_CATEGORY)
+            ->get();
         return view('admin.post.edit')
+            ->with('categories', $categories)
             ->with('post', $post)
             ->with('status', $status);
     }

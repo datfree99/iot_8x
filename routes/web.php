@@ -34,7 +34,7 @@ ROute::get('/contact', [HomeController::class, 'contact'])->name('contact');
 //===================Admin=========================
 
 Route::group(['middleware' => 'auth', 'prefix' => 'admin', 'namespace' => 'App\Http\Controllers\Admin', 'as' => 'admin.'], function () {
-    Route::get('/dashboard', function () {
+    Route::get('/', function () {
         return view('admin.dashboard');
     })->name('dashboard');
 

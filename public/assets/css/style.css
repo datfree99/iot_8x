@@ -601,7 +601,7 @@ a:hover {
     content: "";
     display: table;
     clear: both;
-    background: url(images/ps-divider.svg);
+    background: url(/assets/images/underline_rm.png);
     width: 100%;
     min-width: 200px;
     height: 25px;

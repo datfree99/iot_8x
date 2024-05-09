@@ -39,6 +39,7 @@ use Padosoft\Sluggable\SlugOptions;
  * @method static \Illuminate\Database\Eloquent\Builder|PostModel whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PostModel whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PostModel whereUpdatedAt($value)
+ * @property-read \App\Models\CategoryModel|null $category
  * @mixin \Eloquent
  */
 class PostModel extends Model

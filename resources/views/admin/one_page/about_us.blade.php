@@ -1,65 +1,78 @@
 @extends('layouts.admin')
 
 @section("content")
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Về chúng tôi</h1>
+    <div class="page-header">
+        <div class="row">
+            <div class="col-md-6 col-sm-12">
+                <div class="title">
+                    <h4>Về chúng tôi</h4>
+                </div>
+                <div>
+                    {{ Breadcrumbs::exists(request()->route()->getName()) ? Breadcrumbs::render(request()->route()->getName()) : Breadcrumbs::render('admin.dashboard') }}
+                </div>
+            </div>
+        </div>
     </div>
     @include('components.message')
-    {!! Form::open(['method' => 'post']) !!}
-    <div>
-        <div class="row">
-            <div class="col-md-4">
-                <div class="form-group">
-                    {!! Form::label('title', 'Tiêu đề  <span class="required-label">(*)</span>', [], false) !!}
-                    {!! Form::text('title', old('title', $post->title ?? ''), ['class' => 'form-control', 'placeholder' => 'Nhập tiêu đề...']) !!}
-                    @if ($errors->has('title'))
-                        <span class="error">{{ $errors->first('title') }}</span>
-                    @endif
-                </div>
-                <div class="form-group">
-                    {!! Form::label('description', 'Mô tả <span class="required-label">(*)</span>', [], false) !!}
-                    {!! Form::textarea('description', old('description', $post->description ?? ''), ['class' => 'form-control', 'placeholder' => 'Nhập mô tả...', 'rows' => 3]) !!}
-                    @if ($errors->has('description'))
-                        <span class="error">{{ $errors->first('description') }}</span>
-                    @endif
-                </div>
-                <div class="form-group">
-                    <label for="">Hình ảnh <span class="required-label">(*)</span></label>
-                    <div>
-                        <img src="{{old('image', $post->image ?? '') ?? '/assets/images/default.png'}}" alt="Ảnh bài viết" id="btn_file_add" width="300" height="200">
-                        <input type="text" class="form-control d-none" id="file_name_add" name="image" placeholder="Tên file" value="{{old('image', $post->image ?? '')}}">
-                        <span style="font-size: 14px; font-style: italic; display: block">Khuyến nghị size 600x400 px</span>
+    <div class="card-box">
+        <div class="card-body">
+            {!! Form::open(['method' => 'post']) !!}
+            <div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            {!! Form::label('title', 'Tiêu đề  <span class="required-label">(*)</span>', [], false) !!}
+                            {!! Form::text('title', old('title', $post->title ?? ''), ['class' => 'form-control', 'placeholder' => 'Nhập tiêu đề...']) !!}
+                            @if ($errors->has('title'))
+                                <span class="error">{{ $errors->first('title') }}</span>
+                            @endif
+                        </div>
+                        <div class="form-group">
+                            {!! Form::label('description', 'Mô tả <span class="required-label">(*)</span>', [], false) !!}
+                            {!! Form::textarea('description', old('description', $post->description ?? ''), ['class' => 'form-control', 'placeholder' => 'Nhập mô tả...', 'rows' => 3]) !!}
+                            @if ($errors->has('description'))
+                                <span class="error">{{ $errors->first('description') }}</span>
+                            @endif
+                        </div>
+                        <div class="form-group">
+                            <label for="">Hình ảnh <span class="required-label">(*)</span></label>
+                            <div>
+                                <img src="{{old('image', $post->image ?? '') ? old('image', $post->image ?? '') : '/assets/images/default.png'}}" alt="Ảnh bài viết" id="btn_file_add" width="300" height="200">
+                                <input type="text" class="form-control d-none" id="file_name_add" name="image" placeholder="Tên file" value="{{old('image', $post->image ?? '')}}">
+                                <span style="font-size: 14px; font-style: italic; display: block">Khuyến nghị size 600x400 px</span>
+                            </div>
+                            @if ($errors->has('image'))
+                                <span class="error">{{ $errors->first('image') }}</span>
+                            @endif
+                        </div>
+                        <div class="form-group">
+                            <label for="">Seo tiêu đề</label>
+                            {!! Form::text('seo_title', old('seo_title',  $post->seo_title ?? ''), ['class' => 'form-control', 'placeholder' => 'Nhập seo tiêu đề...']) !!}
+                            @if ($errors->has('seo_title'))
+                                <span class="error">{{ $errors->first('seo_title') }}</span>
+                            @endif
+                        </div>
+                        <div class="form-group">
+                            {!! Form::label('seo_description', 'Seo mô tả', [], false) !!}
+                            {!! Form::textarea('seo_description', old('seo_description',  $post->seo_description ?? ''), ['class' => 'form-control', 'placeholder' => 'Nhập seo mô tả...', 'rows' => 3]) !!}
+                        </div>
+                        <div class="form-group">
+                            {!! Form::label('seo_keywords', 'Seo keywords', [], false) !!}
+                            {!! Form::textarea('seo_keywords', old('seo_keywords', $post->seo_keywords ?? ''), ['class' => 'form-control', 'placeholder' => 'Nhập seo keywords...', 'rows' => 3]) !!}
+                        </div>
                     </div>
-                    @if ($errors->has('image'))
-                        <span class="error">{{ $errors->first('image') }}</span>
-                    @endif
+                    <div class="col-md-8">
+                        <label for="">Nội dung bài viết</label>
+                        <textarea name="contents" id="content-ck" class="form-control" rows="20" placeholder="Nhập mô tả">{!! old('contents', $post->contents ?? '') !!}</textarea>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="">Seo tiêu đề</label>
-                    {!! Form::text('seo_title', old('seo_title',  $post->seo_title ?? ''), ['class' => 'form-control', 'placeholder' => 'Nhập seo tiêu đề...']) !!}
-                    @if ($errors->has('seo_title'))
-                        <span class="error">{{ $errors->first('seo_title') }}</span>
-                    @endif
-                </div>
-                <div class="form-group">
-                    {!! Form::label('seo_description', 'Seo mô tả', [], false) !!}
-                    {!! Form::textarea('seo_description', old('seo_description',  $post->seo_description ?? ''), ['class' => 'form-control', 'placeholder' => 'Nhập seo mô tả...', 'rows' => 3]) !!}
-                </div>
-                <div class="form-group">
-                    {!! Form::label('seo_keywords', 'Seo keywords', [], false) !!}
-                    {!! Form::textarea('seo_keywords', old('seo_keywords', $post->seo_keywords ?? ''), ['class' => 'form-control', 'placeholder' => 'Nhập seo keywords...', 'rows' => 3]) !!}
+                <div class="text-center mb-5 mt-5">
+                    <button type="submit" class="btn btn-primary">Lưu</button>
                 </div>
             </div>
-            <div class="col-md-8">
-                <label for="">Nội dung bài viết</label>
-                <textarea name="contents" id="content-ck" class="form-control" rows="20" placeholder="Nhập mô tả">{!! old('contents', $post->contents ?? '') !!}</textarea>
-            </div>
-        </div>
-        <div class="text-center mb-5 mt-5">
-            <button type="submit" class="btn btn-primary">Lưu</button>
+            {!! Form::close() !!}
         </div>
     </div>
-    {!! Form::close() !!}
 @endsection
 
 

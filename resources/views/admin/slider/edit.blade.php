@@ -17,11 +17,19 @@
         <div class="card-box">
             <div class="card-body">
                 {!! Form::open(['method' => 'put', 'url' => route('admin.slider.update', ['slider' => $slider->id])]) !!}
+                {!! Form::open(['method' => 'post', 'url' => route('admin.slider.store')]) !!}
                 <div class="form-group">
-                    {!! Form::label('title', 'Tiêu đề') !!}
-                    {!! Form::text('title', old('title', $slider->title), ['class' => 'form-control', 'placeholder' => 'Nhập tiêu đề...']) !!}
-                    @if ($errors->has('title'))
-                        <span class="error">{{ $errors->first('title') }}</span>
+                    {!! Form::label('title_vi', 'Tiêu đề Vi') !!}
+                    {!! Form::text('title_vi', old('title_vi', $slider->title_vi), ['class' => 'form-control', 'placeholder' => 'Nhập tiêu đề...']) !!}
+                    @if ($errors->has('title_vi'))
+                        <span class="error">{{ $errors->first('title_vi') }}</span>
+                    @endif
+                </div>
+                <div class="form-group">
+                    {!! Form::label('title_en', 'Tiêu đề En') !!}
+                    {!! Form::text('title_en', old('title_en', $slider->title_en), ['class' => 'form-control', 'placeholder' => 'Nhập tiêu đề...']) !!}
+                    @if ($errors->has('title_en'))
+                        <span class="error">{{ $errors->first('title_en') }}</span>
                     @endif
                 </div>
                 <div class="form-group">

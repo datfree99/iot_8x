@@ -5,7 +5,7 @@
         <div class="row">
             <div class="col-md-6 col-sm-12">
                 <div class="title">
-                    <h4>Categories</h4>
+                    <h4>{{trans("label.categories")}}</h4>
                 </div>
                 <div>
                     {{ Breadcrumbs::exists(request()->route()->getName()) ? Breadcrumbs::render(request()->route()->getName()) : Breadcrumbs::render('admin.dashboard') }}
@@ -13,7 +13,7 @@
             </div>
             <div class="col-md-6 col-sm-12 text-right">
                 <button class="btn btn-primary" data-toggle="modal" data-target="#create-category">
-                    <i class="far fa-plus"></i>  Thêm mới
+                    <i class="far fa-plus"></i>  {{trans("label.create_category")}}
                 </button>
             </div>
         </div>
@@ -27,7 +27,8 @@
                 <table class="table table-bordered" id="dataTable">
                     <thead>
                         <tr>
-                            <th>Tên danh mục</th>
+                            <th>{{trans("label.category_name_en")}}</th>
+                            <th>{{trans("label.category_name_vi")}}</th>
                             <th style="width: 100px;">Action</th>
                         </tr>
                     </thead>
@@ -38,6 +39,9 @@
                                     <i class="far fa-folder-tree"></i>
                                     {{$category->name_en}}
                                 </td>
+                                <td>
+                                    {{$category->name_vi}}
+                                </td>
                                 <td></td>
                             </tr>
                             @if($category->parent_id == 0 && $category->children)
@@ -47,6 +51,9 @@
                                             <span style="margin-left: 20px">
                                              <i class="fal fa-folders"></i> {{$subCate->name_en}}
                                             </span>
+                                        </td>
+                                        <td>
+                                            {{$subCate->name_vi}}
                                         </td>
                                         <td>
                                             <i class="icon icon-edit fal fa-edit" data-url="{{route('admin.category.edit', ['category' => $subCate->id])}}"></i>
@@ -60,6 +67,9 @@
                                                     <span style="margin-left: 40px">
                                                        <i class="fal fa-folder-minus"></i> {{$cate->name_en}}
                                                     </span>
+                                                </td>
+                                                <td>
+                                                    {{$cate->name_vi}}
                                                 </td>
                                                 <td>
                                                     <i class="icon icon-edit fal fa-edit" data-url="{{route('admin.category.edit', ['category' => $cate->id])}}"></i>
@@ -82,7 +92,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="staticBackdropLabel"> Thêm mới danh mục</h5>
+                    <h5 class="modal-title" id="staticBackdropLabel">{{trans("label.create_category")}}</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -90,7 +100,7 @@
                 {!! Form::open(['method' => 'post', 'url' => route('admin.category.store')]) !!}
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="">Parent Category <span class="required-label">(*)</span> </label>
+                        <label for="">{{trans("label.parent_category")}} <span class="required-label">(*)</span> </label>
                         <select name="category" class="form-control">
                             @foreach($parentCategories as $category)
                                 <option value="{{$category->id}}"> {{$category->name_en}} </option>
@@ -107,23 +117,23 @@
                         @endif
                     </div>
                     <div class="form-group">
-                        <label for="">Tên danh mục en <span class="required-label">(*)</span></label>
-                        {{Form::text('name_en', old('name_en'), ['class' => 'form-control', 'placeholder' => 'Nhập tên danh mục...'])}}
+                        <label for="">{{trans("label.category_name_en")}} <span class="required-label">(*)</span></label>
+                        {{Form::text('name_en', old('name_en'), ['class' => 'form-control', 'placeholder' => trans('label.enter_category_name')])}}
                         @if ($errors->has('name_en'))
                             <span class="error">{{ $errors->first('name_en') }}</span>
                         @endif
                     </div>
                     <div class="form-group">
-                        <label for="">Tên danh mục vn</label>
-                        {{Form::text('name_vi', old('name_vi'), ['class' => 'form-control', 'placeholder' => 'Nhập tên danh mục...'])}}
+                        <label for="">{{trans("label.category_name_vi")}}</label>
+                        {{Form::text('name_vi', old('name_vi'), ['class' => 'form-control', 'placeholder' => trans('label.enter_category_name')])}}
                         @if ($errors->has('name_vi'))
                             <span class="error">{{ $errors->first('name_vi') }}</span>
                         @endif
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-                    <button type="submit" class="btn btn-primary">Lưu</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{{trans("label.cancel")}}</button>
+                    <button type="submit" class="btn btn-primary">{{trans("label.save")}}</button>
                 </div>
                 {!! Form::close() !!}
             </div>
@@ -134,7 +144,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="staticBackdropLabel"> Chỉnh sửa danh mục</h5>
+                    <h5 class="modal-title" id="staticBackdropLabel">{{trans("label.edit_category")}}</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -142,7 +152,7 @@
                 <div class="modal-body">
                     <input type="hidden" name="category_id" value="">
                     <div class="form-group">
-                        <label for="">Parent Category <span class="required-label">(*)</span> </label>
+                        <label for="">{{trans("label.parent_category")}} <span class="required-label">(*)</span> </label>
                         <select name="category" class="form-control edit-parent-cate">
                             @foreach($parentCategories as $category)
                                 <option value="{{$category->id}}"> {{$category->name_en}} </option>
@@ -155,17 +165,17 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="">Tên danh mục en <span class="required-label">(*)</span></label>
-                        {{Form::text('name_en', null, ['class' => 'form-control edit-name-en', 'placeholder' => 'Nhập tên danh mục...'])}}
+                        <label for="">{{trans("label.category_name_en")}} <span class="required-label">(*)</span></label>
+                        {{Form::text('name_en', null, ['class' => 'form-control edit-name-en', 'placeholder' => trans('label.enter_category_name')])}}
                     </div>
                     <div class="form-group">
-                        <label for="">Tên danh mục vn</label>
-                        {{Form::text('name_vi', null, ['class' => 'form-control edit-name-vi', 'placeholder' => 'Nhập tên danh mục...'])}}
+                        <label for="">{{trans("label.category_name_vi")}}</label>
+                        {{Form::text('name_vi', null, ['class' => 'form-control edit-name-vi', 'placeholder' => trans('label.enter_category_name')])}}
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-                    <button type="button" class="btn btn-primary update-category" >Lưu</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{{trans("label.cancel")}}</button>
+                    <button type="button" class="btn btn-primary update-category" >{{trans("label.save")}}</button>
                 </div>
             </div>
         </div>
@@ -177,10 +187,10 @@
             @if($errors->any())
                 $('#create-category').modal('show')
             @endif
-
+            let textDelete = "{{trans('label.are_you_sure_delete_category')}}";
             $(".icon-delete").click(function () {
                 let url = $(this).data('url')
-                if (confirm('Bạn có chắc chắn muốn xóa danh mục')) {
+                if (confirm(textDelete)) {
                     $.ajax({
                         method: "DELETE",
                         url: url

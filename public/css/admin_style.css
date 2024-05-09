@@ -81,3 +81,6 @@
 .body-dark .breadcrumb-item::before {
   font-family: "Font Awesome 5 Pro";
 }
+.body-dark textarea.form-control {
+  height: 100px;
+}
