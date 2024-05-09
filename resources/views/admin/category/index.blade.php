@@ -1,23 +1,30 @@
-@extends('layouts.admin_v2')
+@extends('layouts.admin')
 
 @section("content")
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">{{trans("label.categories")}}</h1>
-
-    </div>
-    @include('components.message')
-    <div class="card shadow">
-        <div class="card-header text-right">
-            <div class="d-flex justify-content-between align-items-center">
-                <h6 class="m-0 font-weight-bold text-primary">Categories</h6>
+    <div class="page-header">
+        <div class="row">
+            <div class="col-md-6 col-sm-12">
+                <div class="title">
+                    <h4>Categories</h4>
+                </div>
+                <div>
+                    {{ Breadcrumbs::exists(request()->route()->getName()) ? Breadcrumbs::render(request()->route()->getName()) : Breadcrumbs::render('admin.dashboard') }}
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-12 text-right">
                 <button class="btn btn-primary" data-toggle="modal" data-target="#create-category">
                     <i class="far fa-plus"></i>  Thêm mới
                 </button>
             </div>
         </div>
+    </div>
+
+    @include('components.message')
+    <div class="card-box">
+
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered dataTable" id="dataTable">
+                <table class="table table-bordered" id="dataTable">
                     <thead>
                         <tr>
                             <th>Tên danh mục</th>

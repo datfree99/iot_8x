@@ -35,7 +35,7 @@ ROute::get('/contact', [HomeController::class, 'contact'])->name('contact');
 
 Route::group(['middleware' => 'auth', 'prefix' => 'admin', 'namespace' => 'App\Http\Controllers\Admin', 'as' => 'admin.'], function () {
     Route::get('/dashboard', function () {
-        return view('layouts.admin_v2');
+        return view('admin.dashboard');
     })->name('dashboard');
 
 //    Route::resource('product', 'ProductController')->except('show');

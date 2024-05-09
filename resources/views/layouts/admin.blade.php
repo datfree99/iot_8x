@@ -9,183 +9,137 @@
     <meta name="author" content="">
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>IOT - Dashboard</title>
-    <!-- Custom fonts for this template-->
-    <link rel="stylesheet" href="{{asset("vendor/awesome/css/all.css")}}" type="text/css">
-    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    <title>Iot smart - Dashboard</title>
 
-    <!-- Custom styles for this template-->
-    <link href="{{asset("assets/css/sb-admin-2.min.css")}}" rel="stylesheet">
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="{{asset('vendor/deskapp/css/core.min.css')}}"/>
+    <link rel="stylesheet" type="text/css" href="{{asset('vendor/deskapp/css/style.min.css')}}"/>
+    <link rel="stylesheet" href="{{asset("vendor/awesome/css/all.css")}}" type="text/css">
     <link href="{{asset("/css/admin_style.css")}}" rel="stylesheet">
+    <link rel="icon" type="image/png" href="/images/favicon/favicon-16x16.png" sizes="16x16">
+    <link rel="icon" type="image/png" href="/images/favicon/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/images/favicon/favicon-192x192.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="/images/favicon/favicon-512x512.png" sizes="512x512">
+    <link rel="apple-touch-icon" type="image/png" href="images/favicon/apple-touch-icon.png">
 
 </head>
+{{--class="header-white sidebar-light"--}}
+<body class="body-dark">
 
-<body id="page-top">
-
-<!-- Page Wrapper -->
-<div id="wrapper" class="custom-style">
-
-    <!-- Sidebar -->
-    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-
-        <!-- Sidebar - Brand -->
-        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
-            <div class="sidebar-brand-icon">
-                <i class="fas fa-laugh-wink"></i>
-            </div>
-            <div class="sidebar-brand-text mx-3">IOT Admin</div>
-        </a>
-
-        <!-- Divider -->
-        <hr class="sidebar-divider my-0">
-
-        <!-- Nav Item - Dashboard -->
-        <li class="nav-item">
-            <a class="nav-link" href="{{route('admin.dashboard')}}">
-                <i class="fas fa-fw fa-tachometer-alt"></i>
-                <span>Dashboard</span>
-            </a>
-        </li>
-
-        <!-- Divider -->
-        <hr class="sidebar-divider">
-
-        <!-- Heading -->
-        <div class="sidebar-heading">
-            Quản trị web
+<div class="header custom-dark-app">
+    <div class="header-left">
+        <div class="menu-icon fal fa-bars pl-md-3 p-md-2 ml-md-4">
         </div>
-        <li class="nav-item @if(request()->routeIs(['admin.slider.index', 'admin.slider.create', 'admin.slider.edit'])) active @endif">
-            <a class="nav-link" href="{{route('admin.slider.index')}}">
-                <i class="far fa-tv-alt"></i></i>
-                <span>Slider</span>
-            </a>
-        </li>
-        <li class="nav-item @if(request()->routeIs(['admin.about-us'])) active @endif">
-            <a class="nav-link" href="{{route('admin.about-us')}}">
-                <i class="far fa-user-edit"></i>
-                <span>About us</span>
-            </a>
-        </li>
-        <li class="nav-item @if(request()->routeIs(['admin.category.index'])) active @endif">
-            <a class="nav-link" href="{{route('admin.category.index')}}">
-                <i class="far fa-bezier-curve"></i>
-                <span>Categories</span>
-            </a>
-        </li>
-{{--        <li class="nav-item @if(request()->routeIs(['admin.product.index', 'admin.product.create', 'admin.product.edit'])) active @endif">--}}
-{{--            <a class="nav-link" href="{{route('admin.product.index')}}">--}}
-{{--                <i class="fal fa-cart-plus"></i>--}}
-{{--                <span>Products</span>--}}
-{{--            </a>--}}
-{{--        </li>--}}
-        <li class="nav-item @if(request()->routeIs(['admin.post.index', 'admin.post.create', 'admin.post.edit'])) active @endif">
-            <a class="nav-link" href="{{route('admin.post.index')}}">
-                <i class="far fa-layer-group"></i>
-                <span>Posts</span>
-            </a>
-        </li>
-
-{{--        <!-- Divider -->--}}
-{{--        <hr class="sidebar-divider">--}}
-
-{{--        <!-- Heading -->--}}
-{{--        <div class="sidebar-heading">--}}
-{{--            Quản trị viên--}}
-{{--        </div>--}}
-
-
-        <!-- Divider -->
-        <hr class="sidebar-divider d-none d-md-block">
-
-        <!-- Sidebar Toggler (Sidebar) -->
-        <div class="text-center d-none d-md-inline">
-            <button class="rounded-circle border-0" id="sidebarToggle">
-            </button>
-        </div>
-
-
-    </ul>
-    <!-- End of Sidebar -->
-
-    <!-- Content Wrapper -->
-    <div id="content-wrapper" class="d-flex flex-column">
-        <!-- Main Content -->
-        <div id="content">
-            <!-- Topbar -->
-            <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-                <div>
-                    {{ Breadcrumbs::exists(request()->route()->getName()) ? Breadcrumbs::render(request()->route()->getName()) : Breadcrumbs::render('admin.dashboard') }}
-                </div>
-                <!-- Sidebar Toggle (Topbar) -->
-                <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-                    <i class="fa fa-bars"></i>
-                </button>
-
-                <!-- Topbar Navbar -->
-                <ul class="navbar-nav ml-auto">
-                    <!-- Nav Item - User Information -->
-                    <li class="nav-item dropdown no-arrow">
-                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
-                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <span class="mr-2 d-none d-lg-inline text-gray-600 small"> {{ Auth::user()->name }}</span>
-                            <img class="img-profile rounded-circle"
-                                 src="/assets/images/iot_logo.png">
-                        </a>
-                        <!-- Dropdown - User Information -->
-                        <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-                            <a class="dropdown-item" data-toggle="modal" data-target="#logoutModal" href="{{ route('logout') }}" onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
-                                {{ __('Logout') }}
-                            </a>
-                            <form id="logout-form" action="{{ route('logout') }}" method="DELETE" class="d-none">
-                                @csrf
-                            </form>
-                        </div>
-                    </li>
-
-                </ul>
-
-            </nav>
-            <!-- End of Topbar -->
-
-            <!-- Begin Page Content -->
-            <div class="container-fluid">
-
-                @yield('content')
-
-            </div>
-            <!-- /.container-fluid -->
-
-        </div>
-        <!-- End of Main Content -->
-
-        <!-- Footer -->
-        <footer class="sticky-footer bg-white">
-            <div class="container my-auto">
-                <div class="copyright text-center my-auto">
-                    <span>Copyright &copy; Your Website 2024</span>
-                </div>
-            </div>
-        </footer>
-        <!-- End of Footer -->
 
     </div>
-    <!-- End of Content Wrapper -->
+    <div class="header-right">
+        <div class="user-info-dropdown">
+            <div class="dropdown">
+                <a
+                    class="dropdown-toggle"
+                    href="#"
+                    role="button"
+                    data-toggle="dropdown"
+                >
+                    <span class="user-icon">
+                        <img src="/assets/images/iot_logo.png" alt="{{ Auth::user()->name }}"/>
+                    </span>
+                    <span class="user-name">{{ Auth::user()->name }}</span>
+                </a>
+                <div
+                    class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list"
+                >
+                    <a class="dropdown-item"  href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                        <i class="fal fa-sign-out"></i>
+                        {{ __('Logout') }}
+                    </a>
+                    <form id="logout-form" action="{{ route('logout') }}" method="DELETE" class="d-none">
+                        @csrf
+                    </form>
+                </div>
+            </div>
+        </div>
 
+    </div>
 </div>
-<!-- End of Page Wrapper -->
 
-<!-- Scroll to Top Button-->
-<a class="scroll-to-top rounded" href="#page-top">
-    <i class="fas fa-angle-up"></i>
-</a>
+<div class="left-side-bar">
+    <div class="brand-logo">
+        <a href="{{route('admin.dashboard')}}">
+            <img src="/assets/images/deskapp-logo.svg" alt="" class="dark-logo"/>
+            <img
+                src="/assets/images/deskapp-logo-white.svg"
+                alt=""
+                class="light-logo"
+            />
+        </a>
+        <div class="close-sidebar" data-toggle="left-sidebar-close">
+            <i class="ion-close-round"></i>
+        </div>
+    </div>
+    <div class="menu-block customscroll">
+        <div class="sidebar-menu icon-style-1 icon-list-style-1">
+            <ul id="accordion-menu">
+                <li>
+                    <a href="{{route('admin.dashboard')}}" class="dropdown-toggle no-arrow @if(request()->routeIs('admin.dashboard')) active @endif">
+                        <i class="micon far fa-home"></i>
+                        <span class="mtext">Dashboard</span>
+                    </a>
+                </li>
 
+                <li>
+                    <a href="{{route('admin.category.index')}}" class="dropdown-toggle no-arrow @if(request()->routeIs('admin.category.index')) active @endif">
+                        <i class="micon far fa-bezier-curve"></i>
+                        <span class="mtext">Categories us</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{route('admin.slider.index')}}" class="dropdown-toggle no-arrow @if(request()->routeIs(['admin.slider.index', 'admin.slider.create', 'admin.slider.edit'])) active @endif">
+                        <i class="micon far fa-tv-alt"></i>
+                        <span class="mtext">Slider</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{route('admin.post.index')}}" class="dropdown-toggle no-arrow @if(request()->routeIs(['admin.post.index', 'admin.post.create', 'admin.post.edit'])) active @endif">
+                        <i class="micon far fa-layer-group"></i>
+                        <span class="mtext">Posts</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{route('admin.about-us')}}" class="dropdown-toggle no-arrow @if(request()->routeIs('admin.about-us')) active @endif">
+                        <i class="micon far fa-user-edit"></i>
+                        <span class="mtext">About us</span>
+                    </a>
+                </li>
 
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="mobile-menu-overlay"></div>
+
+<div class="main-container">
+    <div class="pd-ltr-20 xs-pd-20-10 d-flex flex-column @yield('add-container') justify-content-between" style="height: 100%">
+        <div class="mb-20">
+            @yield('content')
+        </div>
+        <div>
+            <div class="footer-wrap pd-20 mb-20 card-box">
+                Iot smart - Copyright © Your Website 2024
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- js -->
+<script src="{{asset('vendor/deskapp/js/core.min.js')}}"></script>
+<script src="{{asset('vendor/deskapp/js/script.min.js')}}"></script>
 <!-- Bootstrap core JavaScript-->
-<script src="{{asset("vendor/jquery/jquery.js")}}"></script>
-<script src="{{asset("vendor/jquery/jquery_ui.js")}}"></script></script>
-<script src="{{asset("assets/js/bootstrap.bundle.min.js")}}"></script>
-<script src="{{asset("assets/js/sb-admin-2.min.js")}}"></script>
+{{--<script src="{{asset("vendor/jquery/jquery.js")}}"></script>--}}
+{{--<script src="{{asset("vendor/jquery/jquery_ui.js")}}"></script></script>--}}
+{{--<script src="{{asset("assets/js/bootstrap.bundle.min.js")}}"></script>--}}
 <script>
     $.ajaxSetup({
         headers: {
@@ -194,7 +148,6 @@
     });
 </script>
 @yield('scripts')
-
+<!-- End Google Tag Manager (noscript) -->
 </body>
-
 </html>

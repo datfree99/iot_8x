@@ -40,12 +40,12 @@ Breadcrumbs::for('admin.slider.index', function (BreadcrumbTrail $trail) {
 
 Breadcrumbs::for('admin.slider.create', function (BreadcrumbTrail $trail) {
     $trail->parent('admin.slider.index');
-    $trail->push('Thêm mới slider');
+    $trail->push(trans('label.update_slider'));
 });
 
 Breadcrumbs::for('admin.slider.edit', function (BreadcrumbTrail $trail) {
     $trail->parent('admin.slider.index');
-    $trail->push('Cập nhật slider');
+    $trail->push(trans('label.edit_slider'));
 });
 
 Breadcrumbs::for('admin.post.index', function (BreadcrumbTrail $trail){

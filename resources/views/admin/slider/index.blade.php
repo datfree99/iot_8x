@@ -1,9 +1,25 @@
 @extends('layouts.admin')
 
 @section("content")
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Danh sách slider</h1>
+
+    <div class="page-header">
+        <div class="row">
+            <div class="col-md-6 col-sm-12">
+                <div class="title">
+                    <h4>Sliders</h4>
+                </div>
+                <div>
+                    {{ Breadcrumbs::exists(request()->route()->getName()) ? Breadcrumbs::render(request()->route()->getName()) : Breadcrumbs::render('admin.dashboard') }}
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-12 text-right">
+                <a href="{{route('admin.slider.create')}}" class="btn btn-primary">
+                    <i class="far fa-plus"></i>  Thêm slider
+                </a>
+            </div>
+        </div>
     </div>
+
     @include('components.message')
     <div class="mb-3">
         {!! Form::open(['method' => 'get']) !!}
@@ -23,14 +39,7 @@
         {!! Form::close() !!}
     </div>
     <div class="card shadow">
-        <div class="card-header">
-            <div class="d-flex justify-content-between align-items-center">
-                <h6 class="m-0 font-weight-bold text-primary">Sliders</h6>
-                <a href="{{route('admin.slider.create')}}" class="btn btn-primary">
-                    <i class="far fa-plus"></i>  Thêm slider
-                </a>
-            </div>
-        </div>
+
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table dataTable" id="dataTable">

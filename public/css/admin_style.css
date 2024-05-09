@@ -4,10 +4,80 @@
   background-size: cover;
 }
 
+.required-label {
+  color: red;
+}
+
+.error {
+  color: red;
+  font-size: 14px;
+  font-style: italic;
+}
+
+.icon {
+  font-size: 18px;
+}
+
+.icon-edit {
+  color: #0a58ca;
+  cursor: pointer;
+}
+
+.icon-delete {
+  color: red;
+  cursor: pointer;
+}
+
+.image-preview {
+  width: 200px;
+  height: 200px;
+}
+
+.show-image-preview {
+  width: 100px;
+  height: 100px;
+}
+
+.preview-slider {
+  cursor: pointer;
+  width: 100%;
+  height: 450px;
+  border: 5px #00a1ff dashed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 40px;
+  color: #00a1ff;
+  flex-direction: column;
+}
+.preview-slider .text-preview {
+  display: block;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.layout-admin-custom .breadcrumb-header .breadcrumb {
+  margin: 0;
+  font-size: 20px;
+}
+
 .custom-dark-app img {
   vertical-align: middle;
 }
 .custom-dark-app ol.breadcrumb {
   margin: 0;
   font-size: 18px;
+}
+.custom-dark-app .dropdown-toggle::after {
+  font-family: "Font Awesome 5 Pro";
+}
+
+.body-dark {
+  height: 100%;
+}
+.body-dark .main-container {
+  height: 100%;
+}
+.body-dark .breadcrumb-item::before {
+  font-family: "Font Awesome 5 Pro";
 }

@@ -12,6 +12,8 @@ return [
     'address' => 'Address',
     'tel' => 'Tel',
     'email' => 'Email',
+    'update_slider' => 'Update slider',
+    'edit_slider' => 'Edit slider',
 
 
 
