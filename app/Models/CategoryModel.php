@@ -62,7 +62,7 @@ class CategoryModel extends Model
     public function getSlugOptions() : SlugOptions
     {
         return SlugOptions::create()
-            ->generateSlugsFrom('name_en')
+            ->generateSlugsFrom('name_vi')
             ->saveSlugsTo('slug');
     }
 
@@ -71,7 +71,17 @@ class CategoryModel extends Model
         return $this->hasMany(CategoryModel::class, 'parent_id');
     }
 
+    public function parent()
+    {
+        return $this->belongsTo(CategoryModel::class, 'parent_id');
+    }
+
     public function post()
+    {
+        return $this->hasMany(PostModel::class, 'category_id');
+    }
+
+    public function posts()
     {
         return $this->hasMany(PostModel::class, 'category_id');
     }
@@ -81,8 +91,41 @@ class CategoryModel extends Model
         return \App::getLocale() == 'vi' ? $this->name_vi : $this->name_en;
     }
 
-    public function linkDetail()
+
+    public function linkProduct()
     {
-        return route('serviceDetail', ['slug' => $this->slug]);
+        return route('product.category', ['slug' => $this->slug]);
+    }
+
+    public function linkService()
+    {
+        return route('service.detail', ['slug' => $this->slug]);
+    }
+
+    public function linkSolution()
+    {
+        return route('solution.detail', ['slug' => $this->slug]);
+    }
+
+    public function isActiveCate($cateParent = null)
+    {
+        if (request()->routeIs(['product.category'])) {
+            if ($this->slug == request('slug')) {
+                return true;
+            }
+
+            $findCategory = category()->findBySlug(request('slug'));
+            if ($findCategory && $findCategory->parent_id != self::PARENT_ID && $findCategory->parent_id == $this->id) {
+                return true;
+            }
+        }
+
+       return false;
+    }
+
+    public function currentCate()
+    {
+
+        return $this->slug == request('slug');
     }
 }

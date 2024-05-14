@@ -26,11 +26,13 @@ class OnePageController extends Controller
         $request->validate([
             'title' => 'required|max:255',
             'description' => 'required',
+            'title_en' => 'nullable|max:255',
             'image' => 'required',
             'seo_title' => 'nullable|max:255'
         ], [
             'title.required' => 'Vui lòng nhập tiêu đề sản phẩm',
             'title.max' => 'Không nhập quá 255 ký tự',
+            'title_en.max' => 'Không nhập quá 255 ký tự',
             'description.required' => 'Vui lòng nhập mô tả sản phẩm',
             'image.required' => 'Vui lòng chọn hình ảnh cho sản phẩm',
             'seo_title.max' => 'Không nhập quá 255 ký tự',
@@ -44,11 +46,14 @@ class OnePageController extends Controller
         ], [
             'title' => $request->get('title'),
             'description' => $request->get('description'),
+            'title_en' => $request->get('title_en'),
+            'description_en' => $request->get('description_en'),
             'image' => $request->get('image'),
             'seo_title' => $request->get('seo_title'),
             'seo_description' => $request->get('seo_description'),
             'seo_keywords' => $request->get('seo_keywords'),
             'contents' => $request->get('contents'),
+            'contents_en' => $request->get('contents_en'),
         ]);
 
         return redirect()

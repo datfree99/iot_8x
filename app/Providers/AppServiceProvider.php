@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Service\BusinessService;
+use App\Service\CategoryService;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -27,10 +29,12 @@ class AppServiceProvider extends ServiceProvider
         Paginator::useBootstrap();
 
         if(request()->get('lang')) {
-            \App::setLocale(request()->get('lang'));
+            Session::put('language', request()->get('lang'));
+            Session::save();
         }
 
         $this->app->singleton('business', BusinessService::class);
+        $this->app->singleton('category', CategoryService::class);
     }
 
 }

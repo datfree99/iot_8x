@@ -13,18 +13,18 @@ class CreateProductsTable extends Migration
      */
     public function up()
     {
-        Schema::create('products', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('category_id');
-            $table->unsignedBigInteger('post_id');
-
-            $table->index('category_id');
-            $table->index('post_id');
-
-            $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
-            $table->foreign('post_id')->references('id')->on('posts')->onDelete('cascade');
-            $table->timestamps();
-        });
+//        Schema::create('products', function (Blueprint $table) {
+//            $table->id();
+//            $table->unsignedBigInteger('category_id');
+//            $table->unsignedBigInteger('post_id');
+//
+//            $table->index('category_id');
+//            $table->index('post_id');
+//
+//            $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
+//            $table->foreign('post_id')->references('id')->on('posts')->onDelete('cascade');
+//            $table->timestamps();
+//        });
     }
 
     /**
@@ -34,6 +34,6 @@ class CreateProductsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('products');
+//        Schema::dropIfExists('products');
     }
 }

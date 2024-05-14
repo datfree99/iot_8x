@@ -10,10 +10,12 @@ class PostCategory extends Component
 
     public $productCategories;
 
+    public $solutions;
     public function __construct()
     {
-        $this->productCategories = CategoryModel::where('key', 'product')
-            ->first();
+        $this->productCategories = category()->findByKey('product');
+
+//        $this->
     }
 
     /**

@@ -20,14 +20,9 @@ class Category extends Component
      */
     public function __construct($showCateDesktop = false, $showCateMobile = false)
     {
-        $this->productCategories = CategoryModel::where('key', 'product')
-            ->first();
-
-        $this->serviceCategories = CategoryModel::where('key', 'services')
-            ->first();
-
-        $this->solutionCategories = CategoryModel::where('key', 'solutions')
-            ->first();
+        $this->productCategories = category()->findByKey('product');
+        $this->serviceCategories = category()->findByKey('services');
+        $this->solutionCategories =category()->findByKey('solutions');
 
         $this->showCateDesktop = $showCateDesktop;
         $this->showCateMobile = $showCateMobile;

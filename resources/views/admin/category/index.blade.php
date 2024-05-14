@@ -18,69 +18,70 @@
             </div>
         </div>
     </div>
-
     @include('components.message')
+
     <div class="card-box">
 
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable">
                     <thead>
-                        <tr>
-                            <th>{{trans("label.category_name_en")}}</th>
-                            <th>{{trans("label.category_name_vi")}}</th>
-                            <th style="width: 100px;">Action</th>
-                        </tr>
+                    <tr>
+                        <th>{{trans("label.category_name_vi")}}</th>
+                        <th>{{trans("label.category_name_en")}}</th>
+                        <th style="width: 100px;">Action</th>
+                    </tr>
                     </thead>
                     <tbody>
-                        @foreach($categories as $category)
-                            <tr>
-                                <td>
-                                    <i class="far fa-folder-tree"></i>
-                                    {{$category->name_en}}
-                                </td>
-                                <td>
-                                    {{$category->name_vi}}
-                                </td>
-                                <td></td>
-                            </tr>
-                            @if($category->parent_id == 0 && $category->children)
-                                @foreach($category->children as $subCate)
-                                    <tr>
-                                        <td>
+                    @foreach($categories as $category)
+                        <tr>
+                            <td>
+                                <i class="far fa-folder-tree"></i>
+                                {{$category->name_vi}}
+                            </td>
+                            <td>
+
+                                {{$category->name_en}}
+                            </td>
+                            <td></td>
+                        </tr>
+                        @if($category->parent_id == 0 && $category->children)
+                            @foreach($category->children as $subCate)
+                                <tr>
+                                    <td>
                                             <span style="margin-left: 20px">
-                                             <i class="fal fa-folders"></i> {{$subCate->name_en}}
+                                             <i class="fal fa-folders"></i> {{$subCate->name_vi}}
                                             </span>
-                                        </td>
-                                        <td>
-                                            {{$subCate->name_vi}}
-                                        </td>
-                                        <td>
-                                            <i class="icon icon-edit fal fa-edit" data-url="{{route('admin.category.edit', ['category' => $subCate->id])}}"></i>
-                                            <i class="icon icon-delete far fa-trash-alt" data-url="{{route('admin.category.destroy', ['category' => $subCate->id])}}"></i>
-                                        </td>
-                                    </tr>
-                                    @if($category->children)
-                                        @foreach($subCate->children as $cate)
-                                            <tr>
-                                                <td>
+                                    </td>
+                                    <td>
+                                        {{$subCate->name_en}}
+                                    </td>
+                                    <td>
+                                        <i class="icon icon-edit fal fa-edit" data-url="{{route('admin.category.edit', ['category' => $subCate->id])}}"></i>
+                                        <i class="icon icon-delete far fa-trash-alt" data-url="{{route('admin.category.destroy', ['category' => $subCate->id])}}"></i>
+                                    </td>
+                                </tr>
+                                @if($category->children)
+                                    @foreach($subCate->children as $cate)
+                                        <tr>
+                                            <td>
                                                     <span style="margin-left: 40px">
-                                                       <i class="fal fa-folder-minus"></i> {{$cate->name_en}}
+                                                       <i class="fal fa-folder-minus"></i> {{$cate->name_vi}}
                                                     </span>
-                                                </td>
-                                                <td>
-                                                    {{$cate->name_vi}}
-                                                </td>
-                                                <td>
-                                                    <i class="icon icon-edit fal fa-edit" data-url="{{route('admin.category.edit', ['category' => $cate->id])}}"></i>
-                                                    <i class="icon icon-delete far fa-trash-alt" data-url="{{route('admin.category.destroy', ['category' => $cate->id])}}"></i>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    @endif
-                                @endforeach
-                            @endif
-                        @endforeach
+                                            </td>
+                                            <td>
+                                                {{$cate->name_en}}
+                                            </td>
+                                            <td>
+                                                <i class="icon icon-edit fal fa-edit" data-url="{{route('admin.category.edit', ['category' => $cate->id])}}"></i>
+                                                <i class="icon icon-delete far fa-trash-alt" data-url="{{route('admin.category.destroy', ['category' => $cate->id])}}"></i>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @endif
+                            @endforeach
+                        @endif
+                    @endforeach
                     </tbody>
                 </table>
             </div>
@@ -99,6 +100,7 @@
                 </div>
                 {!! Form::open(['method' => 'post', 'url' => route('admin.category.store')]) !!}
                 <div class="modal-body">
+
                     <div class="form-group">
                         <label for="">{{trans("label.parent_category")}} <span class="required-label">(*)</span> </label>
                         <select name="category" class="form-control">
@@ -117,17 +119,17 @@
                         @endif
                     </div>
                     <div class="form-group">
-                        <label for="">{{trans("label.category_name_en")}} <span class="required-label">(*)</span></label>
-                        {{Form::text('name_en', old('name_en'), ['class' => 'form-control', 'placeholder' => trans('label.enter_category_name')])}}
-                        @if ($errors->has('name_en'))
-                            <span class="error">{{ $errors->first('name_en') }}</span>
-                        @endif
-                    </div>
-                    <div class="form-group">
-                        <label for="">{{trans("label.category_name_vi")}}</label>
+                        <label for="">{{trans("label.category_name_vi")}} <span class="required-label">(*)</span></label>
                         {{Form::text('name_vi', old('name_vi'), ['class' => 'form-control', 'placeholder' => trans('label.enter_category_name')])}}
                         @if ($errors->has('name_vi'))
                             <span class="error">{{ $errors->first('name_vi') }}</span>
+                        @endif
+                    </div>
+                    <div class="form-group">
+                        <label for="">{{trans("label.category_name_en")}} <span class="required-label">(*)</span> </label>
+                        {{Form::text('name_en', old('name_en'), ['class' => 'form-control', 'placeholder' => trans('label.enter_category_name')])}}
+                        @if ($errors->has('name_en'))
+                            <span class="error">{{ $errors->first('name_en') }}</span>
                         @endif
                     </div>
                 </div>
@@ -150,7 +152,6 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" name="category_id" value="">
                     <div class="form-group">
                         <label for="">{{trans("label.parent_category")}} <span class="required-label">(*)</span> </label>
                         <select name="category" class="form-control edit-parent-cate">
@@ -165,12 +166,12 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="">{{trans("label.category_name_en")}} <span class="required-label">(*)</span></label>
-                        {{Form::text('name_en', null, ['class' => 'form-control edit-name-en', 'placeholder' => trans('label.enter_category_name')])}}
+                        <label for="">{{trans("label.category_name_vi")}} <span class="required-label">(*)</span></label>
+                        {{Form::text('name_vi', null, ['class' => 'form-control edit-name-vi', 'placeholder' => trans('label.enter_category_name')])}}
                     </div>
                     <div class="form-group">
-                        <label for="">{{trans("label.category_name_vi")}}</label>
-                        {{Form::text('name_vi', null, ['class' => 'form-control edit-name-vi', 'placeholder' => trans('label.enter_category_name')])}}
+                        <label for="">{{trans("label.category_name_en")}} <span class="required-label">(*)</span></label>
+                        {{Form::text('name_en', null, ['class' => 'form-control edit-name-en', 'placeholder' => trans('label.enter_category_name')])}}
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -185,8 +186,9 @@
     <script>
         $(document).ready(function(){
             @if($errors->any())
-                $('#create-category').modal('show')
+            $('#create-category').modal('show')
             @endif
+
             let textDelete = "{{trans('label.are_you_sure_delete_category')}}";
             $(".icon-delete").click(function () {
                 let url = $(this).data('url')
@@ -206,14 +208,14 @@
                     method: "GET",
                     url: url
                 }).done(function (res) {
-                   if(res.success) {
-                       let category = res.category
-                       $(".edit-parent-cate").val(category.parent_id)
-                       $(".edit-name-en").val(category.name_en)
-                       $(".edit-name-vi").val(category.name_vi)
-                       $(".update-category").attr('data-url', category.edit)
-                       $('#edit-category').modal('show')
-                   }
+                    if(res.success) {
+                        let category = res.category
+                        $(".edit-parent-cate").val(category.parent_id)
+                        $(".edit-name-en").val(category.name_en)
+                        $(".edit-name-vi").val(category.name_vi)
+                        $(".update-category").attr('data-url', category.edit)
+                        $('#edit-category').modal('show')
+                    }
                 }).fail(function (xhr) {
                     alert("Lỗi không xác định. Vui lòng liên hệ quản trị viên")
                 })

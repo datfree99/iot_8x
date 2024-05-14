@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi" prefix="og: https://ogp.me/ns#" class="ie9 loading-site no-js">
 <head>
     <meta charset="UTF-8">
 
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <title>Iot smart - Giải pháp tự động hóa</title>
+    {!! SEO::generate() !!}
 
     <link rel="stylesheet" id="flatsome-style-css" href="{{asset("assets/css/all.min.css")}}" type="text/css" media="all">
     <link rel="stylesheet" id="flatsome-main-css" href="{{asset("assets/css/flatsome.css")}}" type="text/css" media="all">
@@ -23,22 +23,23 @@
         @font-face {
             font-family: "fl-icons";
             font-display: block;
-            src: url(fonts/fl-icons_1.eot);
+            src: url({{asset('/fonts/fl-icons_1.eot')}});
             src:
-                url(fonts/fl-icons.eot#iefix?v=3.15.3) format("embedded-opentype"),
-                url(fonts/fl-icons.woff2) format("woff2"),
-                url(fonts/fl-icons.ttf) format("truetype"),
-                url(fonts/fl-icons.woff) format("woff"),
-                url(images/fl-icons.svg#fl-icons) format("svg");
+                url({{asset('/fonts/fl-icons.eot#iefix?v=3.15.3')}}) format("embedded-opentype"),
+                url({{asset('/fonts/fl-icons.woff2')}}) format("woff2"),
+                url({{asset('/fonts/fl-icons.ttf')}}) format("truetype"),
+                url({{asset('/fonts/fl-icons.woff')}}) format("woff"),
+                url({{asset('/images/fl-icons.svg#fl-icons')}}) format("svg");
         }
     </style>
 
     @yield('style')
 </head>
-
 <body id="pre-default" data-rsssl="1" class="home page-template page-template-page-transparent-header-light page-template-page-transparent-header-light-php page page-id-60 theme-flatsome woocommerce-no-js full-width lightbox nav-dropdown-has-shadow mobile-submenu-slide mobile-submenu-slide-levels-1 catalog-mode no-prices">
 <div id="wrapper">
-    @yield('header')
+    @include('components.header', ['useBackGroup' => $useBackGroup ?? false])
+    @yield('breadcrumbs')
+
     <main id="main" class="">
         @yield('content')
     </main>
@@ -69,7 +70,7 @@
     </ul>
 </div>
 
-<script type="text/javascript" src="{{asset("assets/js/hoverIntent.min.js")}}" id="hoverIntent-js"></script>
+<script type="text/javascript" src="{{asset("assets/js/hoverIntent.min.js")}}"></script>
 <script type="text/javascript" id="flatsome-js-js-extra">
     var flatsomeVars = {
         "theme": {"version": "3.15.3"},
@@ -97,11 +98,14 @@
     };
     /* ]]> */
 </script>
-<script type="text/javascript" src="{{asset("assets/js/flatsome.js")}}" id="flatsome-js-js"></script>
+
+@yield('before_scripts')
+
+<script type="text/javascript" src="{{asset("assets/js/flatsome.js")}}" ></script>
+<script type="text/javascript" src="{{asset("assets/js/flatsome-lazy-load.js")}}" ></script>
 
 @yield('vendor_scripts')
 
-<script type="text/javascript" src="{{asset("assets/js/flatsome-lazy-load.js")}}" id="flatsome-lazy-js"></script>
 <script>
     jQuery(document).ready(function (e) {
         jQuery(".js-show-all-icon").click(function (e) {

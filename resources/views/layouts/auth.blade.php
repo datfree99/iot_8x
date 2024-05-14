@@ -9,38 +9,26 @@
     <meta name="author" content="">
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>IOT - Dashboard</title>
-    <!-- Custom fonts for this template-->
+    <title>Iot smart - Dashboard</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+          rel="stylesheet"/>
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="{{asset('vendor/deskapp/css/core.min.css')}}"/>
+    <link rel="stylesheet" type="text/css" href="{{asset('vendor/deskapp/css/style.min.css')}}"/>
     <link rel="stylesheet" href="{{asset("vendor/awesome/css/all.css")}}" type="text/css">
-    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
-
-    <!-- Custom styles for this template-->
-    <link href="{{asset("assets/css/sb-admin-2.min.css")}}" rel="stylesheet">
     <link href="{{asset("/css/admin_style.css")}}" rel="stylesheet">
-
+    <link rel="icon" type="image/png" href="/images/favicon/favicon-16x16.png" sizes="16x16">
+    <link rel="icon" type="image/png" href="/images/favicon/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/images/favicon/favicon-192x192.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="/images/favicon/favicon-512x512.png" sizes="512x512">
+    <link rel="apple-touch-icon" type="image/png" href="images/favicon/apple-touch-icon.png">
 </head>
-
-<body class="bg-gradient-primary">
-
-<div class="container auth">
-
+<body class="login-page">
     @yield('content')
-</div>
-
-<!-- Bootstrap core JavaScript-->
-<script src="{{asset("vendor/jquery/jquery.js")}}"></script>
-<script src="{{asset("vendor/jquery/jquery_ui.js")}}"></script></script>
-<script src="{{asset("assets/js/bootstrap.bundle.min.js")}}"></script>
-<script src="{{asset("assets/js/sb-admin-2.min.js")}}"></script>
-<script>
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    });
-</script>
-@yield('scripts')
 
 </body>
-
 </html>
+
+

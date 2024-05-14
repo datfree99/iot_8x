@@ -13,12 +13,12 @@
                         <ul class="sub-menu nav-sidebar-ul children">
                             @foreach($productCategories->children as $cate)
                                 <li class="menu-item menu-item-type-taxonomy menu-item-object-product_cat menu-item-has-children">
-                                    <a href="{{$cate->linkDetail()}}">{{$cate->renderNameHtml()}}</a>
+                                    <a href="{{$cate->linkProduct()}}">{{$cate->renderNameHtml()}}</a>
                                     @if($cate->children)
                                         <ul class="sub-menu nav-sidebar-ul">
                                             @foreach($cate->children as $subCate)
                                                 <li class="menu-item menu-item-type-taxonomy menu-item-object-product_cat">
-                                                    <a href="{{$subCate->linkDetail()}}">{{$subCate->renderNameHtml()}}</a>
+                                                    <a href="{{$subCate->linkProduct()}}">{{$subCate->renderNameHtml()}}</a>
                                                 </li>
                                             @endforeach
                                         </ul>
@@ -32,15 +32,14 @@
                     <a href="{{route('service')}}">{{trans("label.service")}}</a>
                     @if(isset($serviceCategories->children) && count($serviceCategories->children) > 0)
                         <ul class="sub-menu nav-sidebar-ul children">
-
                             @foreach($serviceCategories->children as $cate)
                                 <li class="menu-item menu-item-type-post_type menu-item-object-page">
-                                    <a href="{{$cate->linkDetail()}}">{{ $cate->renderNameHtml() }}</a>
+                                    <a href="{{$cate->linkService()}}">{{ $cate->renderNameHtml() }}</a>
                                     @if($cate->children)
                                         <ul class="sub-menu nav-sidebar-ul">
                                             @foreach($cate->children as $subCate)
                                                 <li id="" class="menu-item menu-item-type-taxonomy menu-item-object-product_cat">
-                                                    <a href="{{$subCate->linkDetail()}}">{{ $subCate->renderNameHtml() }}</a>
+                                                    <a href="{{$subCate->linkService()}}">{{ $subCate->renderNameHtml() }}</a>
                                                 </li>
                                             @endforeach
                                         </ul>
@@ -56,12 +55,12 @@
                         <ul class="sub-menu nav-sidebar-ul children">
                             @foreach($solutionCategories->children as $cate)
                                 <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children">
-                                    <a href="{{$cate->linkDetail()}}">{{  $cate->renderNameHtml() }}</a>
+                                    <a href="{{$cate->linkSolution()}}">{{  $cate->renderNameHtml() }}</a>
                                     @if($cate->children)
                                         <ul class="sub-menu nav-sidebar-ul">
                                             @foreach($cate->children as $subCate)
                                                 <li id="" class="menu-item menu-item-type-post_type menu-item-object-page">
-                                                    <a href="{{$subCate->linkDetail()}}">{{ $subCate->renderNameHtml() }}</a>
+                                                    <a href="{{$subCate->linkSolution()}}">{{ $subCate->renderNameHtml() }}</a>
                                                 </li>
                                             @endforeach
                                         </ul>
@@ -74,7 +73,7 @@
                 </li>
 
                 <li class="menu-item menu-item-type-post_type menu-item-object-page">
-                    <a href="{{route('projects')}}">{{trans("label.projects")}}</a>
+                    <a href="{{route('project')}}">{{trans("label.projects")}}</a>
                 </li>
                 <li class="menu-item menu-item-type-post_type menu-item-object-page">
                     <a href="{{route('customers')}}">{{trans("label.customers")}}</a>
@@ -84,7 +83,7 @@
                 </li>
                 @if(App::getLocale() == 'vi')
                     <li class="lang-item lang-item-360 lang-item-en lang-item-first menu-item menu-item-type-custom menu-item-object-custom">
-                        <a href="{{route(request()->route()->getName(), ['lang' => 'en'])}}" hreflang="en-GB" lang="en-GB"><img
+                        <a href="{{route('change-language', ['lang' => 'en'])}}" hreflang="en-GB" lang="en-GB"><img
                                 src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAALCAMAAABBPP0LAAAAt1BMVEWSmb66z+18msdig8La3u+tYX9IaLc7W7BagbmcUW+kqMr/q6n+//+hsNv/lIr/jIGMnNLJyOP9/fyQttT/wb3/////aWn+YWF5kNT0oqz0i4ueqtIZNJjhvt/8gn//WVr/6+rN1+o9RKZwgcMPJpX/VFT9UEn+RUX8Ozv2Ly+FGzdYZrfU1e/8LS/lQkG/mbVUX60AE231hHtcdMb0mp3qYFTFwNu3w9prcqSURGNDaaIUMX5FNW5wYt7AAAAAjklEQVR4AR3HNUJEMQCGwf+L8RR36ajR+1+CEuvRdd8kK9MNAiRQNgJmVDAt1yM6kSzYVJUsPNssAk5N7ZFKjVNFAY4co6TAOI+kyQm+LFUEBEKKzuWUNB7rSH/rSnvOulOGk+QlXTBqMIrfYX4tSe2nP3iRa/KNK7uTmWJ5a9+erZ3d+18od4ytiZdvZyuKWy8o3UpTVAAAAABJRU5ErkJggg=="
                                 alt="English" width="16" height="11" style="width: 16px; height: 11px;">
                             <span style="margin-left:0.3em;">English</span>
@@ -92,7 +91,7 @@
                     </li>
                 @else
                     <li class="lang-item lang-item-360 lang-item-en lang-item-first menu-item menu-item-type-custom menu-item-object-custom">
-                        <a href="{{route(request()->route()->getName(), ['lang' => 'vi'])}}" hreflang="vi" lang="vi"><img
+                        <a href="{{route('change-language', ['lang' => 'en'])}}" hreflang="vi" lang="vi"><img
                                 src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAALCAMAAABBPP0LAAAATlBMVEX+AAD2AADvAQH/eXn+cXL9amr8YmL9Wlr8UlL7TkvoAAD8d0f6Pz/3ODf2Ly/0KSf6R0f6wTv60T31IBz6+jr4+Cv3QybzEhL4bizhAADgATv8AAAAW0lEQVR4AQXBgU3DQBRAMb+7jwKVUPefkQEQTYJqByBENpKUGoZslXoN5LPONH8G9WWZ7pGlOn6XZmaGRce1J/seei4dl+7dPWDqkk7+58e3+igdlySPcYbwBG+lPhCjrtt9EgAAAABJRU5ErkJggg=="
                                 alt="Tiếng Việt" width="16" height="11" style="width: 16px; height: 11px;">
                             <span style="margin-left:0.3em;">Tiếng Việt</span>
@@ -143,19 +142,18 @@
             <li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-design-default @if(request()->routeIs('about-us')) active @endif">
                 <a href="{{route('about-us')}}" class="nav-top-link">{{trans("label.about_us")}}</a>
             </li>
-            <li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-design-default has-dropdown">
+            <li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-design-default has-dropdown @if(request()->routeIs(['product', 'product.detail'])) active @endif">
                 <a href="{{route('product')}}" class="nav-top-link">{{trans("label.products")}} <i class="icon-angle-down"></i></a>
                 @if(isset($productCategories->children) && count($productCategories->children) > 0)
                     <ul class="sub-menu nav-dropdown nav-dropdown-simple">
                         @foreach($productCategories->children as $cate)
                             <li class="menu-item menu-item-type-taxonomy menu-item-object-product_cat menu-item-has-children nav-dropdown-col">
-
-                                <a href="{{$cate->linkDetail()}}">{{  $cate->renderNameHtml() }}</a>
+                                <a href="{{$cate->linkProduct()}}">{{  $cate->renderNameHtml() }}</a>
                                 @if($cate->children)
                                     <ul class="sub-menu nav-column nav-dropdown-simple">
                                         @foreach($cate->children as $subCate)
                                             <li id="" class="menu-item menu-item-type-taxonomy menu-item-object-product_cat">
-                                                <a href="{{$cate->linkDetail()}}">{{ $cate->renderNameHtml() }}</a>
+                                                <a href="{{$subCate->linkProduct()}}">{{ $cate->renderNameHtml() }}</a>
                                             </li>
                                         @endforeach
                                     </ul>
@@ -166,41 +164,30 @@
                     </ul>
                 @endif
             </li>
-            <li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-design-default has-dropdown">
+            <li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-design-default has-dropdown @if(request()->routeIs(['service', 'service.detail'])) active @endif">
                 <a href="{{route('service')}}" class="nav-top-link">{{trans("label.service")}} <i class="icon-angle-down"></i></a>
                 @if(isset($serviceCategories->children) && count($serviceCategories->children) > 0)
                     <ul class="sub-menu nav-dropdown nav-dropdown-simple">
-
                         @foreach($serviceCategories->children as $cate)
-                            <li class="menu-item menu-item-type-taxonomy menu-item-object-product_cat menu-item-has-children nav-dropdown-col">
-                                <a href="{{$cate->linkDetail()}}">{{ $cate->renderNameHtml() }}</a>
-                                @if($cate->children)
-                                    <ul class="sub-menu nav-column nav-dropdown-simple">
-                                        @foreach($cate->children as $subCate)
-                                            <li id="" class="menu-item menu-item-type-taxonomy menu-item-object-product_cat">
-                                                <a href="{{$cate->linkDetail()}}">{{ $cate->renderNameHtml() }}</a>
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                @endif
-
+                            <li class="menu-item menu-item-type-post_type menu-item-object-page">
+                                <a href="{{$cate->linkService()}}">{{ $cate->renderNameHtml() }}</a>
                             </li>
                         @endforeach
                     </ul>
                 @endif
             </li>
-            <li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-design-default has-dropdown">
+            <li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-design-default has-dropdown @if(request()->routeIs(['solution', 'solution.detail'])) active @endif">
                 <a href="{{route('solution')}}" class="nav-top-link">{{trans("label.solution")}} <i class="icon-angle-down"></i></a>
                 @if(isset($solutionCategories->children) && count($solutionCategories->children) > 0)
                     <ul class="sub-menu nav-dropdown nav-dropdown-simple">
                         @foreach($solutionCategories->children as $cate)
                             <li class="menu-item menu-item-type-taxonomy menu-item-object-product_cat menu-item-has-children nav-dropdown-col">
-                                <a href="{{$cate->linkDetail()}}">{{  $cate->renderNameHtml()  }}</a>
+                                <a href="{{$cate->linkSolution()}}">{{  $cate->renderNameHtml()  }}</a>
                                 @if($cate->children)
                                     <ul class="sub-menu nav-column nav-dropdown-simple">
                                         @foreach($cate->children as $subCate)
                                             <li id="" class="menu-item menu-item-type-taxonomy menu-item-object-product_cat">
-                                                <a href="{{$subCate->linkDetail()}}">{{ $subCate->renderNameHtml() }}</a>
+                                                <a href="{{$subCate->linkSolution()}}">{{ $subCate->renderNameHtml() }}</a>
                                             </li>
                                         @endforeach
                                     </ul>
@@ -211,13 +198,13 @@
                     </ul>
                 @endif
             </li>
-            <li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-design-default">
-                <a href="{{route('projects')}}" class="nav-top-link">{{trans("label.projects")}}</a>
+            <li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-design-default @if(request()->routeIs(['project', 'project.detail'])) active @endif">
+                <a href="{{route('project')}}" class="nav-top-link">{{trans("label.projects")}}</a>
             </li>
-            <li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-design-default">
+            <li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-design-default @if(request()->routeIs(['customers'])) active @endif">
                 <a href="{{route('customers')}}" class="nav-top-link">{{trans("label.customers")}}</a>
             </li>
-            <li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-design-default">
+            <li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-design-default @if(request()->routeIs(['contact'])) active @endif">
                 <a href="{{route('contact')}}" class="nav-top-link">{{trans("label.contact")}}</a>
             </li>
             <li class="header-search header-search-lightbox has-icon">
@@ -228,13 +215,13 @@
                 <div id="search-lightbox" class="mfp-hide dark text-center">
                     <div class="searchform-wrapper ux-search-box relative form-flat is-large">
                         <form role="search" method="get" class="searchform"
-                              action="https://techviet.com.vn/">
+                              action="">
                             <div class="flex-row relative">
                                 <div class="flex-col flex-grow">
                                     <label class="screen-reader-text"
-                                           for="woocommerce-product-search-field-1">Tìm kiếm:</label>
+                                           for="woocommerce-product-search-field-1">{{trans('label.search')}}:</label>
                                     <input type="search" id="woocommerce-product-search-field-1"
-                                           class="search-field mb-0" placeholder="Tìm kiếm..." value=""
+                                           class="search-field mb-0" placeholder="{{trans('label.search')}}..." value=""
                                            name="s">
                                     <input type="hidden" name="post_type" value="product">
                                     <input type="hidden" name="lang" value="vi">

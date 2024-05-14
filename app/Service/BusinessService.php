@@ -8,8 +8,6 @@ class BusinessService
 {
     private $locale;
     private $app;
-    private $categoryServices;
-
     public function __construct(Application $app)
     {
         $this->app = $app;
@@ -41,55 +39,13 @@ class BusinessService
         return $info[$key] ?? '';
     }
 
-    public function getCategory($key)
+    public function social($key = null)
     {
-        return CategoryModel::where('key', $key)
-            ->first();
-    }
-
-    public function getCategoryParentService()
-    {
-        if ($this->categoryServices) {
-            return $this->categoryServices;
+        $socials = config('core.socials');
+        if (empty($key)) {
+            return $socials;
         }
-
-        $key = config('category.list_categories.services.key');
-
-        $category = $this->getCategory($key);
-        if ($category && isset($category->children) && $category->children->count() > 0) {
-            return $this->categoryServices = $category->children;
-        }
-
-        return null;
-    }
-
-    public function getCategoriesAndSub($categoryId)
-    {
-        $category = CategoryModel::find($categoryId);
-
-        if (!$category) {
-            return collect();
-        }
-        $categories = [
-            $category
-        ];
-        if (isset($category->children)) {
-            $categories = array_merge($categories,  $this->recursiveCate($category->children));
-        }
-
-        return collect($categories);
-    }
-
-    private function recursiveCate($categories, $newCategories = [])
-    {
-        $list = [];
-        foreach ($categories as $item) {
-            $newCategories[] = $item;
-            if (isset($item->children)) {
-                $newCategories = array_merge($newCategories, $this->recursiveCate($item->children, $list));
-            }
-        }
-        return $newCategories;
+        return $socials[$key] ?? "";
     }
 
 }
