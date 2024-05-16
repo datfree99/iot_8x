@@ -19,9 +19,11 @@ class HomeController extends Controller
         SEOMeta::setTitle(trans('label.automation_solutions'));
 
         $sliders = SliderModel::get();
-        $aboutUs = category()->findByKey(config('category.list_categories.about_us.key'))->posts()->first();
+        $catePost = category()->findByKey(config('category.list_categories.about_us.key'));
+        $aboutUs = $catePost ? $catePost->posts()->first() : new PostModel();
+
         $products = $this->getPostProduct();
-        $services = $this->getPostService();
+        $services = $this->getPostService(4);
         $solutions = $this->geSolution();
         $projects = $this->getProject();
 
@@ -54,7 +56,7 @@ class HomeController extends Controller
 
     public function contact()
     {
-
+        SEOMeta::setTitle(trans('label.contact'));
         return view('client.contact');
     }
 
@@ -87,12 +89,40 @@ class HomeController extends Controller
             ->with('products', $products);
     }
 
+    public function service(Request $request)
+    {
+        SEOMeta::setTitle(trans('label.service'));
+        $services = $this->getPostService();
+
+        return view('client.service')
+            ->with('services', $services);
+    }
+
+    public function solution(Request $request)
+    {
+        SEOMeta::setTitle(trans('label.solution'));
+        $solutions = $this->geSolution(16);
+
+        return view('client.solution')
+            ->with('solutions', $solutions);
+    }
+
+    public function project()
+    {
+        SEOMeta::setTitle(trans('label.projects'));
+        $projects = $this->getProject(16);
 
 
+        return view('client.project')
+            ->with('projects', $projects);
+    }
 
+    public function customers()
+    {
+        SEOMeta::setTitle(trans('label.customers'));
 
-
-
+        return view('client.customers');
+    }
 
     private function getPostProduct()
     {
@@ -106,40 +136,56 @@ class HomeController extends Controller
             ->get(['id', 'title', 'title_en', 'image', 'slug']);
     }
 
-    private function getPostService(){
+    private function getPostService($limit = null){
         $cateService = category()->getCategoriesAndSubByKey(config('category.list_categories.services.key'))
             ->pluck('id')
             ->toArray();
 
-        return PostModel::whereIn('category_id', $cateService)
-            ->orderByDesc('id')
-            ->take(4)
-            ->get(['id', 'title', 'title_en', 'description', 'description_en', 'image', 'slug']);
+        $model = PostModel::whereIn('category_id', $cateService)
+            ->orderByDesc('id');
+
+        if ($limit) {
+            $model = $model->take($limit);
+        }
+
+        return $model->get(['id', 'title', 'title_en', 'description', 'description_en', 'image', 'slug']);
     }
 
-    private function geSolution()
+    private function geSolution($limit = null)
     {
-
         $cateSolution = category()->getCategoriesAndSubByKey(config('category.list_categories.solutions.key'))
             ->pluck('id')
             ->toArray();
 
-        return PostModel::whereIn('category_id', $cateSolution)
-            ->orderByDesc('id')
+        $model = PostModel::whereIn('category_id', $cateSolution)
+            ->orderByDesc('id');
+
+        if ($limit) {
+            return $model->select(['id', 'title', 'title_en', 'image', 'slug'])
+                ->paginate($limit);
+        }
+
+        return $model
             ->take(8)
             ->get(['id', 'title', 'title_en', 'image', 'slug']);
     }
 
-    private function getProject()
+    private function getProject($limit = null)
     {
 
         $cateProject = category()->getCategoriesAndSubByKey(config('category.list_categories.project.key'))
             ->pluck('id')
             ->toArray();
 
-        return PostModel::whereIn('category_id', $cateProject)
-            ->orderByDesc('id')
-            ->take(8)
+        $model = PostModel::whereIn('category_id', $cateProject)
+            ->orderByDesc('id');
+
+        if ($limit) {
+            return $model->select(['id', 'title', 'title_en', 'description', 'description_en', 'image', 'slug'])
+                ->paginate($limit);
+        }
+
+        return $model->take(8)
             ->get(['id', 'title', 'title_en', 'description', 'description_en', 'image', 'slug']);
     }
 }

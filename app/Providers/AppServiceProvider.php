@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Service\BusinessService;
 use App\Service\CategoryService;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\ServiceProvider;
 

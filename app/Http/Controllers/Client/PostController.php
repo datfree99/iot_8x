@@ -21,4 +21,27 @@ class PostController extends Controller
         return view('client.post.product', compact('product', 'similarProducts'));
     }
 
+    public function service($slug)
+    {
+        $service = PostModel::where('slug', $slug)
+            ->firstOrFail();
+
+        return view('client.post.service', compact('service'));
+    }
+
+    public function solution($slug)
+    {
+        $solution = PostModel::where('slug', $slug)
+            ->firstOrFail();
+
+        return view('client.post.solution', compact('solution'));
+    }
+
+    public function project($slug)
+    {
+        $project = PostModel::where('slug', $slug)
+            ->firstOrFail();
+
+        return view('client.post.project', compact('project'));
+    }
 }

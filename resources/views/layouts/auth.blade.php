@@ -9,8 +9,8 @@
     <meta name="author" content="">
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Iot smart - Dashboard</title>
-
+    <meta name="robots" content="none">
+    <title>Login - Iotsmart.vn</title>
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
           rel="stylesheet"/>
@@ -27,7 +27,6 @@
 </head>
 <body class="login-page">
     @yield('content')
-
 </body>
 </html>
 

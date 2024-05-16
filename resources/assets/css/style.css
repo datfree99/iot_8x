@@ -481,9 +481,6 @@ button, .button {
     text-transform: none;
 }
 
-.section-title span {
-    text-transform: none;
-}
 
 .alt-font {
     font-family: "Be Vietnam", sans-serif;
@@ -790,4 +787,24 @@ a:hover {
 
 .section-title-main{
     text-transform: uppercase;
+}
+
+#header .nav-dark .nav>li>a {
+    color: #fff;
+}
+#page-header .page-title-inner {
+    min-height: 234px;
+}
+
+#page-header {
+    margin-bottom: 50px;
+}
+
+#page-header .title-bg {
+    background-image: url(/assets/images/back_iotsmart.png);
+    background-position: center center;
+}
+
+.back-to-top.active {
+    z-index: 10;
 }

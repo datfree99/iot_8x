@@ -29,11 +29,10 @@ Route::get('/p/{slug}', [HomeController::class, 'product'])->name('product.categ
 
 
 Route::get('/c/{slug}', [PostController::class, 'detail'])->name('category.detail');
-Route::get('dich-vu/{slug}', [PostController::class, 'serviceDetail'])->name('service.detail');
-Route::get('giai-phap/{slug}', [PostController::class, 'solutionDetail'])->name('solution.detail');
 Route::get('san-pham/{slug}', [PostController::class, 'product'])->name('product.detail');
-Route::get('dich-vu/{slug}', [PostController::class, 'serviceDetail'])->name('service.detail');
-Route::get('du-an/{slug}', [PostController::class, 'projectDetail'])->name('project.detail');
+Route::get('giai-phap/{slug}', [PostController::class, 'solution'])->name('solution.detail');
+Route::get('dich-vu/{slug}', [PostController::class, 'service'])->name('service.detail');
+Route::get('du-an/{slug}', [PostController::class, 'project'])->name('project.detail');
 
 Route::get('/change-language', function (\Illuminate\Http\Request $request) {
     $language = $request->input('lang');

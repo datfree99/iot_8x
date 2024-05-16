@@ -77,6 +77,11 @@ class PostModel extends Model
         return $this->belongsTo(CategoryModel::class, 'category_id');
     }
 
+    public function scopeActive($query)
+    {
+        return $query->where('status', self::STATUS_ACTIVE);
+    }
+
     public function statusHtml()
     {
         if ($this->status == self::STATUS_ACTIVE) {
@@ -90,17 +95,17 @@ class PostModel extends Model
 
     public function renderTitle()
     {
-        return $this->title;
+        return \App::getLocale() == 'vi' ? $this->title : $this->title_en;
     }
 
     public function renderDescription()
     {
-        return $this->description;
+        return \App::getLocale() == 'vi' ? $this->description : $this->description_en;
     }
 
     public function renderContents()
     {
-        return $this->contents;
+        return \App::getLocale() == 'vi' ? $this->contents : $this->contents_en;
     }
 
     public function showImage()

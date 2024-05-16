@@ -106,6 +106,7 @@
                         <select name="category" class="form-control">
                             @foreach($parentCategories as $category)
                                 <option value="{{$category->id}}"> {{$category->name_en}} </option>
+                                @continue($category->key == config('category.list_categories.services.key'))
                                 @if($category->parent_id == 0 && $category->children)
                                     @foreach($category->children as $subCate)
                                         <option value="{{$subCate->id}}"> == {{$subCate->name_en}} </option>
