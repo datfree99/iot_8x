@@ -41,7 +41,7 @@ return [
             'url'         => 'http://iotsmart.vn', // Set null for using Url::current(), set false to total remove
             'type'        => 'website',
             'site_name'   => 'company',
-            'images'      => [''],
+            'images'      => ['https://iotsmart.vn/uploads/sliders/back_iotsmart.png'],
         ],
     ],
     'twitter' => [
@@ -62,7 +62,7 @@ return [
             'description' => 'Cung cấp các sản phẩm và dịch vụ tự động hóa hiện đại giúp các doanh nghiệp cải thiện hiệu quả, giảm chi phí và tăng năng suất', // set false to total remove
             'url'         => false, // Set to null or 'full' to use Url::full(), set to 'current' to use Url::current(), set false to total remove
             'type'        => 'WebPage',
-            'images'      => [],
+            'images'      => ['https://iotsmart.vn/uploads/sliders/back_iotsmart.png'],
         ],
     ],
 ];
