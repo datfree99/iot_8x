@@ -1,25 +1,5 @@
-@extends('layouts.client')
-@section('style')
-    <style>
-        #page-header .page-title-inner {
-            min-height: 234px;
-        }
+@extends('layouts.client', ['useBackGroup' => true])
 
-        #page-header {
-            margin-bottom: 50px;
-        }
-
-        #page-header .title-bg {
-            background-image: url(/assets/images/back_iotsmart.png);
-            background-position: center center;
-        }
-
-    </style>
-@stop
-
-@section('header')
-    @include('components.header_home')
-@endsection
 @section('content')
     <main id="main" class="">
         <div id="content" role="main">

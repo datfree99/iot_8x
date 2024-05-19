@@ -40,6 +40,14 @@ use Padosoft\Sluggable\SlugOptions;
  * @method static \Illuminate\Database\Eloquent\Builder|PostModel whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PostModel whereUpdatedAt($value)
  * @property-read \App\Models\CategoryModel|null $category
+ * @property string|null $key
+ * @property string|null $title_en
+ * @property string|null $description_en
+ * @property string|null $contents_en
+ * @method static \Illuminate\Database\Eloquent\Builder|PostModel whereContentsEn($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|PostModel whereDescriptionEn($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|PostModel whereKey($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|PostModel whereTitleEn($value)
  * @mixin \Eloquent
  */
 class PostModel extends Model
@@ -48,18 +56,7 @@ class PostModel extends Model
     protected $table = 'posts';
     protected $guarded = ['id'];
 
-    protected $fillable = [
-        'category_id',
-        'slug',
-        'title',
-        'description',
-        'contents',
-        'image',
-        'seo_title',
-        'seo_description',
-        'seo_keywords',
-        'status',
-    ];
+
     const STATUS_DRAFT = 'draft';
     const STATUS_ACTIVE = 'active';
     const STATUS_INACTIVE = 'inactive';
@@ -80,6 +77,11 @@ class PostModel extends Model
         return $this->belongsTo(CategoryModel::class, 'category_id');
     }
 
+    public function scopeActive($query)
+    {
+        return $query->where('status', self::STATUS_ACTIVE);
+    }
+
     public function statusHtml()
     {
         if ($this->status == self::STATUS_ACTIVE) {
@@ -93,16 +95,51 @@ class PostModel extends Model
 
     public function renderTitle()
     {
-        return $this->title;
+        return \App::getLocale() == 'vi' ? $this->title : $this->title_en;
     }
 
     public function renderDescription()
     {
-        return $this->description;
+        return \App::getLocale() == 'vi' ? $this->description : $this->description_en;
     }
 
     public function renderContents()
     {
-        return $this->contents;
+        return \App::getLocale() == 'vi' ? $this->contents : $this->contents_en;
+    }
+
+    public function showImage()
+    {
+        return asset($this->image);
+    }
+
+    public function renderSeoTitle()
+    {
+        return $this->seo_title ? $this->seo_title : $this->renderTitle();
+    }
+
+    public function renderSeoDescription()
+    {
+        return $this->seo_description ? $this->seo_description : $this->renderDescription();
+    }
+
+    public function productDetailLink()
+    {
+        return route('product.detail', ['slug' => $this->slug]);
+    }
+
+    public function serviceDetailLink()
+    {
+        return route('service.detail', ['slug' => $this->slug]);
+    }
+
+    public function solutionDetailLink()
+    {
+        return route('solution.detail', ['slug' => $this->slug]);
+    }
+
+    public function projectDetailLink()
+    {
+        return route('project.detail', ['slug' => $this->slug]);
     }
 }

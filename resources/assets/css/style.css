@@ -481,9 +481,6 @@ button, .button {
     text-transform: none;
 }
 
-.section-title span {
-    text-transform: none;
-}
 
 .alt-font {
     font-family: "Be Vietnam", sans-serif;
@@ -560,9 +557,9 @@ a:hover {
     }
 }
 
-.footer-2 {
-    background-image: url('images/triangles.png');
-}
+/*.footer-2 {*/
+/*    background-image: url('images/triangles.png');*/
+/*}*/
 
 .footer-1 {
     background-color: #ffffff
@@ -601,15 +598,16 @@ a:hover {
     content: "";
     display: table;
     clear: both;
-    background: url(/assets/images/underline_rm.png);
+    background: url(/assets/images/underline.png);
     width: 100%;
     min-width: 200px;
-    height: 25px;
+    height: 30px;
     background-repeat: no-repeat;
     background-position-x: center;
     background-position-y: center;
     padding-top: 0;
     margin-bottom: 20px;
+    background-size: contain;
 }
 
 .ps-divider .section-title b {
@@ -617,10 +615,11 @@ a:hover {
 }
 
 .ps-divider.div-light .section-title-center span:after {
-    background: url(images/ps-divider-light.svg);
+    background: url(/assets/images/underline.png);
     background-repeat: no-repeat;
     background-position-x: center;
     background-position-y: center;
+    background-size: contain;
 }
 
 .ps-divider .section-title-center {
@@ -782,3 +781,30 @@ a:hover {
     url(images/fl-icons.svg#fl-icons) format("svg");
 }
 
+#home-service .icon-box:hover .has-icon-bg .icon .icon-inner {
+    background-color: #006cb73b;
+}
+
+.section-title-main{
+    text-transform: uppercase;
+}
+
+#header .nav-dark .nav>li>a {
+    color: #fff;
+}
+#page-header .page-title-inner {
+    min-height: 234px;
+}
+
+#page-header {
+    margin-bottom: 50px;
+}
+
+#page-header .title-bg {
+    background-image: url(/assets/images/back_iotsmart.png);
+    background-position: center center;
+}
+
+.back-to-top.active {
+    z-index: 10;
+}

@@ -36,8 +36,8 @@ class PostController extends Controller
         }
 
         if ($request->get('category')) {
-            $findCategories = business()
-                ->getCategoriesAndSub((int) $request->get('category'))
+            $findCategories = category()
+                ->getCategoriesAndSubByKey((int) $request->get('category'))
                 ->pluck('id')
                 ->toArray();
             $posts = $posts->whereIn('category_id', $findCategories);
@@ -80,15 +80,16 @@ class PostController extends Controller
     {
         $request->validate([
             'title' => 'required|max:255',
-            'description' => 'required|max:255',
+            'description' => 'required',
+            'title_en' => 'nullable|max:255',
             'category' => 'required',
             'image' => 'required',
             'status' => 'required'
         ], [
             'title.required' => 'Vui lòng nhập tiêu đề sản phẩm',
             'title.max' => 'Không nhập quá 255 ký tự',
+            'title_en.max' => 'Không nhập quá 255 ký tự',
             'description.required' => 'Vui lòng nhập mô tả sản phẩm',
-            'description.max' => 'Không nhập quá 255 ký tự',
             'category.required' => 'Vui lòng chọn danh mục sản phẩm',
             'image.required' => 'Vui lòng chọn hình ảnh cho sản phẩm',
             'status.required' => 'Vui lòng chọn trạng thái'
@@ -100,6 +101,9 @@ class PostController extends Controller
             'title' => $request->get('title'),
             'description' => $request->get('description'),
             'contents' => $request->get('contents'),
+            'title_en' => $request->get('title_en'),
+            'description_en' => $request->get('description_en'),
+            'contents_en' => $request->get('contents_en'),
             'image' => $request->get('image'),
             'seo_title' => $request->get('seo_title'),
             'seo_description' => $request->get('seo_description'),
@@ -126,26 +130,54 @@ class PostController extends Controller
             ->with('status', $status);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
-        //
+        $post = PostModel::findOrFail($id);
+
+        $request->validate([
+            'title' => 'required|max:255',
+            'description' => 'required',
+            'title_en' => 'nullable|max:255',
+            'category' => 'required',
+            'image' => 'required',
+            'status' => 'required'
+        ], [
+            'title.required' => 'Vui lòng nhập tiêu đề sản phẩm',
+            'title.max' => 'Không nhập quá 255 ký tự',
+            'title_en.max' => 'Không nhập quá 255 ký tự',
+            'description.required' => 'Vui lòng nhập mô tả sản phẩm',
+            'category.required' => 'Vui lòng chọn danh mục sản phẩm',
+            'image.required' => 'Vui lòng chọn hình ảnh cho sản phẩm',
+            'status.required' => 'Vui lòng chọn trạng thái'
+        ]);
+
+
+        $post->update([
+            'category_id' => $request->get('category'),
+            'title' => $request->get('title'),
+            'description' => $request->get('description'),
+            'contents' => $request->get('contents'),
+            'title_en' => $request->get('title_en'),
+            'description_en' => $request->get('description_en'),
+            'contents_en' => $request->get('contents_en'),
+            'image' => $request->get('image'),
+            'seo_title' => $request->get('seo_title'),
+            'seo_description' => $request->get('seo_description'),
+            'seo_keywords' => $request->get('seo_keywords'),
+            'status' => $request->get('status'),
+        ]);
+        return redirect()->route('admin.post.index')->with('success', 'Cập nhật bài viết thành công');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+
     public function destroy($id)
     {
-        //
+        $post = PostModel::findOrFail($id);
+
+        $post->delete();
+        session()->flash('success', trans('label.deleted_success'));
+        return response()->json([
+            'success' => true,
+        ]);
     }
 }

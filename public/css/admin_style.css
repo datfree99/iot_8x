@@ -82,5 +82,9 @@
   font-family: "Font Awesome 5 Pro";
 }
 .body-dark textarea.form-control {
-  height: 100px;
+  height: 120px;
+}
+
+#post-content .cke_contents {
+  height: 30rem !important;
 }

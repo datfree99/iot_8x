@@ -19,20 +19,22 @@
                     </ul>
 
                     <div class="social-icons follow-icons">
-                        <a href="#" target="_blank" data-label="Facebook" rel="noopener noreferrer nofollow" class="icon primary button circle facebook tooltip" title="Follow on Facebook" aria-label="Follow on Facebook"><i class="icon-facebook"></i></a>
-                        <a href="#" target="_blank" rel="noopener noreferrer nofollow" data-label="TikTok" class="icon primary button circle tiktok tooltip" title="Follow on TikTok" aria-label="Follow on TikTok"><i class="icon-tiktok"></i></a>
-                        <a href="#" target="_blank" rel="noopener noreferrer nofollow" data-label="YouTube" class="icon primary button circle youtube tooltip tooltipstered" aria-label="Follow on YouTube"><i class="icon-youtube"></i></a>
+                        <a href="{{business()->social('facebook')}}" target="_blank" data-label="Facebook" rel="noopener noreferrer nofollow" class="icon primary button circle facebook tooltip" title="Follow on Facebook" aria-label="Follow on Facebook"><i class="icon-facebook"></i></a>
+                        <a href="{{business()->social('tiktok')}}" target="_blank" rel="noopener noreferrer nofollow" data-label="TikTok" class="icon primary button circle tiktok tooltip" title="Follow on TikTok" aria-label="Follow on TikTok"><i class="icon-tiktok"></i></a>
+                        <a href="{{business()->social('youtube')}}" target="_blank" rel="noopener noreferrer nofollow" data-label="YouTube" class="icon primary button circle youtube tooltip tooltipstered" aria-label="Follow on YouTube"><i class="icon-youtube"></i></a>
                     </div>
                 </div>
             </div>
             <div id="nav_menu-5" class="col pb-0 widget widget_nav_menu"><span class="widget-title">{{trans("label.service")}}</span>
                 <div class="is-divider small"></div>
                 <div class="menu-dich-vu-container">
-                    @if(business()->getCategoryParentService())
+                    @if(category()->getCategoriesAndSubByKey('services'))
                         <ul id="menu-dich-vu" class="menu">
-                            @foreach(business()->getCategoryParentService() as $category)
+                            @foreach(category()->getCategoriesAndSubByKey('services') as $category)
+                                @continue($loop->index == 0)
+                                @break($loop->index == 5)
                                 <li class="menu-item menu-item-type-post_type menu-item-object-page">
-                                    <a href="{{$category->linkDetail()}}">{{$category->renderNameHtml()}}</a>
+                                    <a href="{{route('category.detail', ['slug' => $category->slug ])}}">{{$category->renderNameHtml()}}</a>
                                 </li>
                             @endforeach
                         </ul>

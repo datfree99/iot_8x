@@ -10,11 +10,20 @@ return [
     'customers' => 'Customers',
     'contact' => 'Contact',
     'projects' => 'Projects',
+    'new_solution' => 'New solution',
+    'our_partner' => 'Our partner',
+    'our_service' => 'Our service',
+    'our_solution' => 'Our solution',
+    'our_project' => 'Our project',
+    'feature_products' => 'Feature products',
+    'read_more' => 'Read more',
+    'view_all' => 'View all',
     'address' => 'Address',
     'tel' => 'Tel',
     'email' => 'Email',
     'save' => 'Save',
     'cancel' => 'Cancel',
+    'search' => 'Search',
     'parent_category' => 'Parent Category',
     'create_category' => 'Create category',
     'category_name_en' => 'Category name en',
@@ -32,6 +41,7 @@ return [
     'create_slider' => 'Create slider',
     'update_slider' => 'Update slider',
     'edit_slider' => 'Edit slider',
+    'automation_solutions'  => "Automation solutions",
 
 
 

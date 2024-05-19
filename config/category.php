@@ -3,34 +3,48 @@
 return [
     'list_categories' => [
         'about_us' => [
+            'key' => 'about_us',
             'vi' => 'Về chúng tôi',
             'en' => 'About us',
-            'key' => 'about_us'
+            'slug' => 've-chung-toi',
         ],
         'product' => [
+            'key' => 'product',
             'vi' => 'Sản phẩm',
             'en' => 'Products',
-            'key' => 'product',
+            'slug' => 'san-pham',
         ],
         'services' => [
+            'key' => 'services',
             'vi' => 'Dịch vụ',
             'en' => 'Services',
-            'key' => 'services',
+            'slug' => 'dich-vu',
         ],
         'solutions' => [
+            'key' => 'solutions',
             'vi' => 'Giải pháp',
             'en' => 'Solutions',
-            'key' => 'solutions',
+            'slug' => 'giai-phap',
         ],
         'project' => [
+            'key' => 'project',
             'vi' => 'Dự án',
             'en' => 'Projects',
-            'key' => 'project',
+            'slug' => 'du-an',
+        ],
+        'customers' => [
+            'key' => 'customers',
+            'vi' => 'Khách hàng',
+            'en' => 'Customers',
+            'slug' => 'khach-hang',
         ],
         'contact' => [
+            'key' => 'contact',
             'vi' => 'Liên hệ',
             'en' => 'Contact',
-            'key' => 'contact'
+            'slug' => 'lien-he',
         ],
-    ]
+    ],
+
+
 ];

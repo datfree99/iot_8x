@@ -16,5 +16,10 @@ return [
         'address_en' => 'No. 11/71B, TDP Moi, Nguyen Cong My Street, Ngoc Son Ward, Kien An District, Hai Phong City',
         'tel' => '0974988606',
         'email' => 'manager@iotsmart.vn',
+    ],
+    'socials' => [
+        'youtube' => 'https://www.youtube.com',
+        'facebook' => 'https://www.facebook.com',
+        'tiktok' => 'https://www.tiktok.com',
     ]
 ];

@@ -26,20 +26,21 @@ class CategoryController extends Controller
     {
         $request->validate([
             'category' => 'required|exists:categories,id',
+            'name_vi' => 'required|max:255',
             'name_en' => 'required|max:255',
-            'name_vi' => 'nullable|max:255',
         ], [
             'parent_id.required' => 'Vui lòng nhập parent category',
             'parent_id.exists' => 'Parent category không tồn tại',
+            'name_vi.required' => 'Vui lòng nhập tên danh mục',
             'name_en.required' => 'Vui lòng nhập tên danh mục',
+            'name_vi.max' => 'Vui lòng không nhập quá 255 ký tự',
             'name_en.max' => 'Vui lòng không nhập quá 255 ký tự',
-            'name_vi.max' => 'Vui lòng không nhập quá 255 ký tự'
         ]);
 
         CategoryModel::create([
             'parent_id' => $request->get('category'),
-            'name_en' => $request->get('name_en'),
             'name_vi' => $request->get('name_vi'),
+            'name_en' => $request->get('name_en'),
         ]);
 
         return redirect()->back()->with('success', trans('label.create_success'));
@@ -61,14 +62,15 @@ class CategoryController extends Controller
 
         $validate = \Validator::make($request->all(), [
             'category' => 'required|exists:categories,id',
+            'name_vi' => 'required|max:255',
             'name_en' => 'required|max:255',
-            'name_vi' => 'nullable|max:255',
         ], [
             'parent_id.required' => 'Vui lòng nhập parent category',
             'parent_id.exists' => 'Parent category không tồn tại',
+            'name_vi.required' => 'Vui lòng nhập tên danh mục',
             'name_en.required' => 'Vui lòng nhập tên danh mục',
+            'name_vi.max' => 'Vui lòng không nhập quá 255 ký tự',
             'name_en.max' => 'Vui lòng không nhập quá 255 ký tự',
-            'name_vi.max' => 'Vui lòng không nhập quá 255 ký tự'
         ]);
         if ($validate->fails()) {
             session()->flash('error', $validate->errors()->first());
