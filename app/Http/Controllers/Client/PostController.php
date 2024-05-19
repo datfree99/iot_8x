@@ -3,11 +3,26 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Models\CategoryModel;
 use App\Models\PostModel;
+use Artesaos\SEOTools\Facades\SEOMeta;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
+
+    public function detail($slug)
+    {
+        $category = CategoryModel::where('slug', $slug)->firstOrFail();
+
+        $post = $category->posts()->orderByDesc('id')->firstOrFail();
+
+        SEOMeta::setTitle($post->renderTitle());
+        SEOMeta::setDescription($post->renderDescription());
+        return view('client.post.detail', compact('post'));
+    }
+
+
 
     public function product(Request $request, $slug)
     {

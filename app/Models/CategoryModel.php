@@ -99,12 +99,12 @@ class CategoryModel extends Model
 
     public function linkService()
     {
-        return route('service.detail', ['slug' => $this->slug]);
+        return route('category.detail', ['slug' => $this->slug]);
     }
 
     public function linkSolution()
     {
-        return route('solution.detail', ['slug' => $this->slug]);
+        return route('category.detail', ['slug' => $this->slug]);
     }
 
     public function isActiveCate($cateParent = null)

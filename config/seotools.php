@@ -9,7 +9,7 @@ return [
          * The default configurations to be used by the meta generator.
          */
         'defaults'       => [
-            'title'        => "Iotsmart.vn",
+            'title'        => "iotsmart.vn",
             'titleBefore'  => false,
             'description'  => 'Cung cấp các sản phẩm và dịch vụ tự động hóa hiện đại giúp các doanh nghiệp cải thiện hiệu quả, giảm chi phí và tăng năng suất',
             'separator'    => ' - ',
