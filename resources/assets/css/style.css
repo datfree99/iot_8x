@@ -789,9 +789,6 @@ a:hover {
     text-transform: uppercase;
 }
 
-#header .nav-dark .nav>li>a {
-    color: #fff;
-}
 #page-header .page-title-inner {
     min-height: 234px;
 }

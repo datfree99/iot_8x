@@ -72,7 +72,7 @@
                                                 }
 
                                                 #banner-{{$slider->id}} .bg.bg-loaded {
-                                                    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0)),  url("{{$slider->image}}");
+                                                    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0)),  url("{{$slider->image}}");
                                                 }
 
                                                 #banner-{{$slider->id}} .overlay {
