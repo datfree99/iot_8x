@@ -72,7 +72,7 @@
                                                 }
 
                                                 #banner-{{$slider->id}} .bg.bg-loaded {
-                                                    background-image: url("{{$slider->image}}");
+                                                    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0)),  url("{{$slider->image}}");
                                                 }
 
                                                 #banner-{{$slider->id}} .overlay {
@@ -118,7 +118,7 @@
                                         &quot;friction&quot;: 0.6
                                     }">
                                     @foreach($sliders as $slider)
-                                        <div class="banner has-hover" id="banner-{{$slider->id}}">
+                                        <div class="banner has-hover" id="banner-mobile-{{$slider->id}}">
                                             <div class="banner-inner fill">
                                                 <div class="banner-bg fill">
                                                     <div class="bg fill bg-fill "></div>
@@ -147,29 +147,29 @@
                                             </div>
 
                                             <style>
-                                                #banner-{{$slider->id}} {
+                                                #banner-mobile-{{$slider->id}} {
                                                     padding-top: 150%;
                                                 }
 
-                                                #banner-{{$slider->id}} .bg.bg-loaded {
-                                                    background-image: url("{{$slider->image}}");
+                                                #banner-mobile-{{$slider->id}} .bg.bg-loaded {
+                                                    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0)),  url("{{$slider->image}}");
                                                 }
 
-                                                #banner-{{$slider->id}} .overlay {
+                                                #banner-mobile-{{$slider->id}} .overlay {
                                                     background-color: rgba(0, 0, 0, 0.06);
                                                 }
 
-                                                #banner-{{$slider->id}} .ux-shape-divider--top svg {
+                                                #banner-mobile-{{$slider->id}} .ux-shape-divider--top svg {
                                                     height: 150px;
                                                     --divider-top-width: 100%;
                                                 }
 
-                                                #banner-{{$slider->id}} .ux-shape-divider--bottom svg {
+                                                #banner-mobile-{{$slider->id}} .ux-shape-divider--bottom svg {
                                                     height: 150px;
                                                     --divider-width: 100%;
                                                 }
                                                 @media (min-width: 550px) {
-                                                    #banner-{{$slider->id}} {
+                                                    #banner-mobile-{{$slider->id}} {
                                                         padding-top: 36%;
                                                     }
                                                 }
