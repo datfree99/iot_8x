@@ -47,3 +47,6 @@ Route::post('app/check-login', function (Request $request){
     ]);
 });
 
+Route::get('pressure', [\App\Http\Controllers\TestController::class, 'pressure']);
+Route::get('yield', [\App\Http\Controllers\TestController::class, 'yield']);
+
