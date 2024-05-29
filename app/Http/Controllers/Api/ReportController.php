@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\DB;
 
 class ReportController extends Controller
 {
-
     public function monitorPressure(Request $request)
     {
         $factory = $request->user()->factory;
@@ -65,7 +64,7 @@ class ReportController extends Controller
 
         return response()->json([
             'success' => true,
-            'reports' => array_values($data)
+            'data' => array_values($data)
         ]);
     }
 
@@ -102,9 +101,72 @@ class ReportController extends Controller
 
         return response()->json([
             'success' => true,
-            'reports' => array_values($data)
+            'data' => array_values($data)
         ]);
     }
+
+    public function sensor(Request $request)
+    {
+        $factory = $request->user()->factory;
+        $type = ['m3'];
+        $sensors = $this->getSensor($factory, $type);
+        $measuringPoints = $this->getMeasuringPoint($factory, $sensors->pluck('IDthietbi')->unique()->toArray());
+        $data = [];
+        $idSensorPoints = $sensors->pluck('IDsensor', 'IDthietbi')->toArray();
+        foreach ($measuringPoints as $key => $measuringPoint) {
+            $data[] = [
+                'ID' => $idSensorPoints[$key] ?? $key,
+                'Name' => $measuringPoint
+            ];
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $data
+        ]);
+    }
+
+    public function outputChart(Request $request)
+    {
+        $validate = \Validator::make($request->input(),[
+            'measuring_point' => 'required',
+            'month' => 'required|date_format:Y-m'
+        ], [
+            'measuring_point.required' => 'Vui lòng chọn điểm đo',
+            'month.required' => 'Vui lòng chọn tháng',
+            'month.date_format' => 'Sai định dạng'
+        ]);
+
+        if ($validate->fails()){
+            return response()->json([
+                'success' => false,
+                'message' => $validate->errors()
+            ]);
+        }
+        $factory = $request->user()->factory;
+
+        $tableData = $factory->IDnhamay . "Data";
+
+        $date = Carbon::createFromFormat('Y-m-d', $request->get('month'). '-01');
+        $start = $date->copy()->firstOfMonth()->format('Y-m-d 00:00:00');
+        $end = $date->endOfMonth()->format('Y-m-d 23:59:59');
+        $reports = DB::connection('sqlsrv')->table($tableData)
+            ->where('IDsensor', $request->get('measuring_point'))
+            ->whereBetween('Date', [$start, $end])
+            ->select([
+                DB::raw('CAST(Date AS DATE) as Date'),
+                DB::raw('AVG(Value) as AverageValue')
+            ])
+            ->groupBy(DB::raw('CAST(Date AS DATE)'))
+            ->orderBy(DB::raw('CAST(Date AS DATE)'))
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $reports
+        ]);
+    }
+
 
     private function getSensor(FactoryModel $factory, array $type)
     {

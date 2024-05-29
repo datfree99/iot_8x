@@ -21,7 +21,7 @@ class AuthController extends Controller
 
         if (! $user || $request->password != $user->password) {
             throw ValidationException::withMessages([
-                'username' => ['The provided credentials are incorrect.'],
+                'username' => ['Thông tin đăng nhập không chính xác'],
             ]);
         }
 
