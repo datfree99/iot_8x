@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Sql\FactoryModel;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -9,6 +10,7 @@ class TestController extends Controller
 {
     public function pressure()
     {
+
         $data = [];
         $startTimestamp = strtotime('2024-05-10');
         $endTimestamp = strtotime('2024-05-25');

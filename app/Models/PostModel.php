@@ -48,6 +48,9 @@ use Padosoft\Sluggable\SlugOptions;
  * @method static \Illuminate\Database\Eloquent\Builder|PostModel whereDescriptionEn($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PostModel whereKey($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PostModel whereTitleEn($value)
+ * @property string|null $type
+ * @method static \Illuminate\Database\Eloquent\Builder|PostModel active()
+ * @method static \Illuminate\Database\Eloquent\Builder|PostModel whereType($value)
  * @mixin \Eloquent
  */
 class PostModel extends Model

@@ -40,6 +40,12 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+
+        'api' => [
+            'driver' => 'sanctum',
+            'provider' => 'users_sqlsrv',
+        ],
+
     ],
 
     /*
@@ -69,6 +75,11 @@ return [
         //     'driver' => 'database',
         //     'table' => 'users',
         // ],
+
+        'users_sqlsrv' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Sql\UserAppModel::class,
+        ],
     ],
 
     /*

@@ -2,6 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,39 +16,33 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::post('app/login', [AuthController::class, 'login']);
+
+Route::group(['middleware' => 'auth:sanctum', 'prefix' => 'app'], function (){
+    Route::post('/logout', [AuthController::class, 'logout']);
+
+
+    Route::get('monitor-pressure',[ReportController::class, 'monitorPressure']);
+    Route::get('quantity-monitoring',[ReportController::class, 'quantityMonitoring']);
 });
 
-Route::post('app/login', function (Request $request){
 
-    if ($request->get('username') == 'admin@iotsmart.vn' && $request->get('password') == '123456@') {
-        return response()->json([
-            'success' => true,
-            'token' => 'xxxxxxxxxxxxxxxxx123'
-        ]);
-    }
 
-   return response()->json([
-       'success' => false,
-       'message' => 'Thông tin đăng nhập không chính xác'
-   ]);
-});
 
-Route::post('app/check-login', function (Request $request){
-
-    if ($request->get('token') == 'xxxxxxxxxxxxxxxxx123') {
-        return response()->json([
-            'success' => true,
-        ]);
-    }
-
-    return response()->json([
-        'success' => false,
-        'message' => 'Token hết hạn'
-    ]);
-});
-
-Route::get('pressure', [\App\Http\Controllers\TestController::class, 'pressure']);
-Route::get('yield', [\App\Http\Controllers\TestController::class, 'yield']);
+//Route::post('app/check-login', function (Request $request){
+//
+//    if ($request->get('token') == 'xxxxxxxxxxxxxxxxx123') {
+//        return response()->json([
+//            'success' => true,
+//        ]);
+//    }
+//
+//    return response()->json([
+//        'success' => false,
+//        'message' => 'Token hết hạn'
+//    ]);
+//});
+//
+//Route::get('pressure', [\App\Http\Controllers\TestController::class, 'pressure']);
+//Route::get('yield', [\App\Http\Controllers\TestController::class, 'yield']);
 

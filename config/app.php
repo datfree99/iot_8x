@@ -176,6 +176,7 @@ return [
         App\Providers\RouteServiceProvider::class,
         Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
         Artesaos\SEOTools\Providers\SEOToolsServiceProvider::class,
+        Laravel\Sanctum\SanctumServiceProvider::class,
     ],
 
     /*

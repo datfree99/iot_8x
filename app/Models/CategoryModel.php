@@ -34,6 +34,9 @@ use Padosoft\Sluggable\SlugOptions;
  * @method static \Illuminate\Database\Eloquent\Builder|CategoryModel whereUpdatedAt($value)
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\PostModel> $post
  * @property-read int|null $post_count
+ * @property-read CategoryModel|null $parent
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\PostModel> $posts
+ * @property-read int|null $posts_count
  * @mixin \Eloquent
  */
 class CategoryModel extends Model
