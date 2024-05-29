@@ -15,7 +15,7 @@ return [
             'separator'    => ' - ',
             'keywords'     => ['iot', 'iot smart', 'tự động hóa'],
             'canonical'    => false, // Set to null or 'full' to use Url::full(), set to 'current' to use Url::current(), set false to total remove
-            'robots'       => 'index/follow', // Set to 'all', 'none' or any combination of index/noindex and follow/nofollow
+            'robots'       => 'all', // Set to 'all', 'none' or any combination of index/noindex and follow/nofollow
         ],
         /*
          * Webmaster tags are always added.
