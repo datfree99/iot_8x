@@ -159,13 +159,16 @@ class ReportController extends Controller
             return substr($item->Date, 0, 10);
         });
 
-        $result = $groupedByDate->map(function ($items) {
+        $result = $groupedByDate->map(function ($items, $key) {
             $maxDateItem = $items->max('Date');
             $minDateItem = $items->min('Date');
             $maxValue = $items->where('Date', $maxDateItem)->pluck('Value')->first();
             $minValue = $items->where('Date', $minDateItem)->pluck('Value')->first();
-            return $maxValue - $minValue;
-        });
+            return [
+                'Date' => substr($key, 8),
+                'Value' => round($maxValue - $minValue, 2)
+            ];
+        })->values();
 
         return response()->json([
             'success' => true,
