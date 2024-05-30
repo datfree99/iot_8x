@@ -30,10 +30,10 @@ class AppServiceProvider extends ServiceProvider
     {
         Paginator::useBootstrap();
 
-        if(request()->get('lang')) {
-            Session::put('language', request()->get('lang'));
-            Session::save();
-        }
+//        if(request()->get('lang')) {
+//            Session::put('language', request()->get('lang'));
+//            Session::save();
+//        }
 
         $this->app->singleton('business', BusinessService::class);
         $this->app->singleton('category', CategoryService::class);

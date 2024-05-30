@@ -153,17 +153,23 @@ class ReportController extends Controller
         $reports = DB::connection('sqlsrv')->table($tableData)
             ->where('IDsensor', $request->get('measuring_point'))
             ->whereBetween('Date', [$start, $end])
-            ->select([
-                DB::raw('CAST(Date AS DATE) as Date'),
-                DB::raw('AVG(Value) as AverageValue')
-            ])
-            ->groupBy(DB::raw('CAST(Date AS DATE)'))
-            ->orderBy(DB::raw('CAST(Date AS DATE)'))
             ->get();
+
+        $groupedByDate = $reports->groupBy(function ($item) {
+            return substr($item->Date, 0, 10);
+        });
+
+        $result = $groupedByDate->map(function ($items) {
+            $maxDateItem = $items->max('Date');
+            $minDateItem = $items->min('Date');
+            $maxValue = $items->where('Date', $maxDateItem)->pluck('Value')->first();
+            $minValue = $items->where('Date', $minDateItem)->pluck('Value')->first();
+            return $maxValue - $minValue;
+        });
 
         return response()->json([
             'success' => true,
-            'data' => $reports
+            'data' => $result
         ]);
     }
 
