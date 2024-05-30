@@ -28,6 +28,7 @@ class ReportController extends Controller
         $reports = $this->getData($factory, $idSensors, $type);
 
         $data = [];
+
         foreach ($sensors as $sensor) {
             $key = $sensor->IDthietbi;
 
@@ -59,12 +60,57 @@ class ReportController extends Controller
                 $data[$key]['date'] = "-";
             }
 
+            if ($value->Unit == 'm3') {
+                $timeFindStart = Carbon::now()->startOfDay()->format('Y-m-d H:i:s');
+                $timeFindEnd = Carbon::now()->subHour()->format('Y-m-d H:i:s');
+                $finData = DB::connection('sqlsrv')->table($tableData)
+                    ->where('IDsensor', $value->IDsensor)
+                    ->whereBetween('Date', [$timeFindStart, $timeFindEnd])
+                    ->first();
+
+                if ($finData) {
+                    $data[$key]['m3InDay'] = round($value->Value - $finData->Value, 2);
+                } else {
+                    $data[$key]['m3InDay'] = 0;
+                }
+
+            }
+
             $data[$key][$value->Unit] = round($value->Value, 2);
+        }
+
+        $reports = [];
+        foreach ($data as $key => $item) {
+            try {
+                $dateToCheck = Carbon::parse($item['date']);
+                $currentDate = Carbon::now();
+                $fiveMinutesBefore = $currentDate->copy()->subMinutes(5);
+
+                if ($dateToCheck->lessThan($currentDate) && $dateToCheck->greaterThanOrEqualTo($fiveMinutesBefore)) {
+                   $status = 'active';
+                } else {
+                    $status = 'inactive';
+                }
+            }catch (\Exception $e){
+                $status = 'inactive';
+            }
+
+            $reports[] = [
+                'id' => $key,
+                'measuringPoint' => (string) ($item['name'] ?? '-'),
+                'status' => $status,
+                'updateTime' => (string) ($item['date'] ?? '-'),
+                'pressure' => (string) ($item['bar'] ?? '-'),
+                'waterFlow' => (string) ($item['m3/h'] ?? '-'),
+                'dailyOutput' => (string) ($item['m3InDay'] ?? '-'),
+                'total' => (string) ( $item['m3'] ?? '-'),
+            ];
+
         }
 
         return response()->json([
             'success' => true,
-            'data' => array_values($data)
+            'data' => $reports
         ]);
     }
 
@@ -85,17 +131,26 @@ class ReportController extends Controller
             $key = $report->IDsensor . $report->Unit;
 
             $date = "-";
+            $status = 'inactive';
             try {
-                $carbonDate = Carbon::createFromFormat('Y-m-d H:i:s.u', $report->Date)->format('Y-m-d H:i');
-                $date = $carbonDate;
+                $carbonDate = Carbon::createFromFormat('Y-m-d H:i:s.u', $report->Date);
+                $currentDate = Carbon::now();
+                $fiveMinutesBefore = $currentDate->copy()->subMinutes(5);
+                if ($carbonDate->lessThan($currentDate) && $carbonDate->greaterThanOrEqualTo($fiveMinutesBefore)) {
+                    $status = 'active';
+                }
+
+                $date = $carbonDate->format('Y-m-d H:i');
             }catch (\Exception $e){
+
             }
 
             $data[$key] = [
-                'Name' => $idSensors[$report->IDsensor] ?? "-",
-                'Unit' => $report->Unit,
-                'Value' => round($report->Value, 2),
-                'Date' => $date
+                'quality_criteria' => $idSensors[$report->IDsensor] ?? "-",
+                'unit' => $report->Unit,
+                'status' => $status,
+                'measured_value' => (string) round($report->Value, 2),
+                'update_time' => $date
             ];
         }
 
@@ -159,23 +214,74 @@ class ReportController extends Controller
             return substr($item->Date, 0, 10);
         });
 
-        $result = $groupedByDate->map(function ($items, $key) {
+
+        $data = [];
+        $startWhite = Carbon::now()->firstOfMonth();
+        $endWhite = Carbon::now();
+        $i = 0;
+        $max = 0;
+        $total = 0;
+        while ($startWhite->lte($endWhite)){
+            $key = $startWhite->copy()->format('Y-m-d');
+            $i++;
+            $startWhite->addDay();
+
+            if (!isset($groupedByDate[$key])) {
+                $data[] = [
+                    'date' => (string) $i,
+                    'quantity' => 0
+                ];
+
+                continue;
+            }
+
+            $items = $groupedByDate[$key];
             $maxDateItem = $items->max('Date');
             $minDateItem = $items->min('Date');
             $maxValue = $items->where('Date', $maxDateItem)->pluck('Value')->first();
             $minValue = $items->where('Date', $minDateItem)->pluck('Value')->first();
-            return [
-                'Date' => substr($key, 8),
-                'Value' => round($maxValue - $minValue, 2)
+            $quantity = round($maxValue - $minValue, 2);
+            if ($max < $quantity) {
+                $max = $quantity;
+            }
+            $total += $quantity;
+            $data[] = [
+                'date' =>(string) $i,
+                'quantity' => $quantity
             ];
-        })->values();
+
+        }
 
         return response()->json([
             'success' => true,
-            'data' => $result
+            'data' => $data,
+            'quantity' => [
+                'max' => $this->roundUpToNearest($max),
+                'total' => $total
+            ]
         ]);
     }
 
+    function roundUpToNearest($number) {
+        if ($number == 0) {
+            return 0;
+        }
+
+        // Tìm bậc của số
+        $exponent = floor(log10($number));
+
+        // Cơ sở của bậc (10, 100, 1000, ...)
+        $base = pow(10, $exponent);
+
+        // Tỷ lệ để làm tròn (từ 1 đến 2 lần cơ sở)
+        $ratio = $number / $base;
+
+        if ($ratio <= 1.5) {
+            return 1.5 * $base;
+        } else {
+            return ceil($number / $base) * $base;
+        }
+    }
 
     private function getSensor(FactoryModel $factory, array $type)
     {

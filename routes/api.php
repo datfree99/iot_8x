@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\ReportController;
 Route::post('app/login', [AuthController::class, 'login']);
 
 Route::group(['middleware' => 'auth:sanctum', 'prefix' => 'app'], function (){
+    Route::get('/check-login', [AuthController::class, 'checkLogin']);
     Route::post('/logout', [AuthController::class, 'logout']);
 
 

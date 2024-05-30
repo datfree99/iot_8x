@@ -37,6 +37,18 @@ class AuthController extends Controller
         ]);
     }
 
+    public function checkLogin(Request $request)
+    {
+        $user = $request->user();
+        return response()->json([
+            'success' => true,
+            'info' => [
+                'name' => $user->factory->Name,
+                'address' => $user->factory->Address
+            ]
+        ]);
+    }
+
     public function logout(Request $request)
     {
         $request->user()->tokens()->delete();
