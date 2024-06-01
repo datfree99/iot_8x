@@ -149,7 +149,7 @@ class ReportController extends Controller
                 'quality_criteria' => $idSensors[$report->IDsensor] ?? "-",
                 'unit' => $report->Unit,
                 'status' => $status,
-                'measured_value' => (string) round($report->Value, 2),
+                'measured_value' => (string)  round($report->Value, 2),
                 'update_time' => $date
             ];
         }
@@ -170,8 +170,8 @@ class ReportController extends Controller
         $idSensorPoints = $sensors->pluck('IDsensor', 'IDthietbi')->toArray();
         foreach ($measuringPoints as $key => $measuringPoint) {
             $data[] = [
-                'ID' => $idSensorPoints[$key] ?? $key,
-                'Name' => $measuringPoint
+                'id' => $idSensorPoints[$key] ?? $key,
+                'name' => $measuringPoint
             ];
         }
 
@@ -216,8 +216,8 @@ class ReportController extends Controller
 
 
         $data = [];
-        $startWhite = Carbon::now()->firstOfMonth();
-        $endWhite = Carbon::now();
+        $startWhite = Carbon::createFromFormat('Y-m-d', $request->get('month'). '-01')->firstOfMonth();
+        $endWhite = Carbon::createFromFormat('Y-m-d', $request->get('month'). '-01')->endOfMonth();
         $i = 0;
         $max = 0;
         $total = 0;
