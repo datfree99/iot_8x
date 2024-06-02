@@ -114,6 +114,54 @@ class ReportController extends Controller
         ]);
     }
 
+    public function monitorPressureDetail(Request $request)
+    {
+        $validate = \Validator::make($request->input(),[
+            'measuring_point' => 'required',
+            'date' => 'required|date_format:Y-m-d'
+        ], [
+            'measuring_point.required' => 'Vui lòng chọn điểm đo',
+            'date.required' => 'Vui lòng chọn ngày',
+            'date.date_format' => 'Sai định dạng'
+        ]);
+
+        if ($validate->fails()){
+            return response()->json([
+                'success' => false,
+                'message' => $validate->errors()
+            ]);
+        }
+        $factory = $request->user()->factory;
+        $tableData = $factory->IDnhamay . "Data";
+
+        $date = Carbon::createFromFormat('Y-m-d', $request->get('date'));
+        $start = $date->copy()->firstOfMonth()->format('Y-m-d 00:00:00');
+        $end = $date->endOfMonth()->format('Y-m-d 23:59:59');
+
+        $pressures = DB::connection('sqlsrv')->table($tableData)
+            ->where('IDsensor', $request->get('measuring_point'))
+            ->whereBetween('Date', [$start, $end])
+            ->get();
+
+        $groupedByDate = $pressures->groupBy(function ($item) {
+            return substr($item->Date, 0, 16);
+        });
+
+        $pressures = $groupedByDate->map(function ($item){
+            $firstItem = $item->first();
+            $date = Carbon::createFromFormat('Y-m-d H:i:s.u', $firstItem->Date);
+            return [
+                'date' => $date->format('i'),
+                'value' => $item->max('Value')
+            ];
+        })->values();
+
+        return response()->json([
+            'success' => true,
+            'message' => $pressures
+        ]);
+    }
+
     public function quantityMonitoring(Request $request)
     {
         $factory = $request->user()->factory;

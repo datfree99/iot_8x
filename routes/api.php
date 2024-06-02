@@ -24,9 +24,13 @@ Route::group(['middleware' => 'auth:sanctum', 'prefix' => 'app'], function (){
 
 
     Route::get('monitor-pressure',[ReportController::class, 'monitorPressure']);
+    Route::get('monitor-pressure/detail',[ReportController::class, 'monitorPressureDetail']);
+
     Route::get('quantity-monitoring',[ReportController::class, 'quantityMonitoring']);
     Route::get('sensor',[ReportController::class, 'sensor']);
     Route::get('output-chart',[ReportController::class, 'outputChart']);
+
+
 });
 
 
