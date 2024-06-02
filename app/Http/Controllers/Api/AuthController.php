@@ -20,8 +20,9 @@ class AuthController extends Controller
         $user = UserAppModel::where('username', $request->username)->first();
 
         if (! $user || $request->password != $user->password) {
-            throw ValidationException::withMessages([
-                'username' => ['Thông tin đăng nhập không chính xác'],
+            return response()->json([
+                'success' => false,
+                'message' => 'Thông tin đăng nhập không chính xác'
             ]);
         }
 

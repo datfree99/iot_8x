@@ -131,35 +131,113 @@ class ReportController extends Controller
                 'message' => $validate->errors()
             ]);
         }
+
         $factory = $request->user()->factory;
         $tableData = $factory->IDnhamay . "Data";
 
         $date = Carbon::createFromFormat('Y-m-d', $request->get('date'));
-        $start = $date->copy()->firstOfMonth()->format('Y-m-d 00:00:00');
-        $end = $date->endOfMonth()->format('Y-m-d 23:59:59');
+        $start = $date->format('Y-m-d 00:00:00');
+        $end = $date->format('Y-m-d 23:59:59');
 
-        $pressures = DB::connection('sqlsrv')->table($tableData)
-            ->where('IDsensor', $request->get('measuring_point'))
-            ->whereBetween('Date', [$start, $end])
+        $type = ['m3/h', 'm3', 'bar'];
+
+        $tableSensor = $factory->IDnhamay. "listsensor";
+
+        $sensors = DB::connection('sqlsrv')
+            ->table($tableSensor)
+            ->whereIn('TypeOfSensor', $type)
+            ->where('IDthietbi', $request->get('measuring_point'))
+            ->orderBy('IDthietbi')
             ->get();
 
-        $groupedByDate = $pressures->groupBy(function ($item) {
-            return substr($item->Date, 0, 16);
-        });
 
-        $pressures = $groupedByDate->map(function ($item){
-            $firstItem = $item->first();
-            $date = Carbon::createFromFormat('Y-m-d H:i:s.u', $firstItem->Date);
-            return [
-                'date' => $date->format('i'),
-                'value' => $item->max('Value')
-            ];
-        })->values();
+        $sensors = $sensors->pluck('TypeOfSensor', 'IDsensor')->toArray();
+        $idSensors = array_keys($sensors);
+
+        $results = DB::connection('sqlsrv')->table($tableData)
+            ->whereIn('IDsensor', $idSensors)
+            ->whereIn('Unit', $type)
+            ->whereBetween('Date', [$start, $end])
+            ->orderBy('Date')
+            ->get();
+
+        $results = $results->groupBy('IDsensor');
+
+        $data = [];
+
+        $mainX = [];
+        foreach ($results as $key => $result) {
+
+            if (!isset($sensors[$key])) {
+                continue;
+            }
+
+            $keyGroup = $sensors[$key];
+
+            if ($keyGroup == 'm3') {
+
+                $groupTimes  = $result->groupBy(function ($item) {
+                    return substr($item->Date, 0, 13);
+                });
+
+                $data[$keyGroup] = $groupTimes->map(function ($items){
+
+                    $maxDateItem = $items->max('Date');
+                    $minDateItem = $items->min('Date');
+
+
+                    $maxValue = $items->where('Date', $maxDateItem)->pluck('Value')->first();
+                    $minValue = $items->where('Date', $minDateItem)->pluck('Value')->first();
+                    $quantity = round($maxValue - $minValue, 2);
+
+                    $first = $items->first();
+                    $date = Carbon::createFromFormat('Y-m-d H:i:s.u', $first->Date);
+                    return [
+                        'key' => (int) $date->format('H'),
+                        'value' => (float) round($quantity, 2)
+                    ];
+                })->values();;
+
+                continue;
+            }
+
+            $groupTimes  = $result->groupBy(function ($item) {
+                return substr($item->Date, 0, 16);
+            });
+            $i = 0;
+
+            $data[$keyGroup] = $groupTimes->map(function ($item) use (&$mainX, &$i){
+                $index = $i++;
+                $firstItem = $item->first();
+                $date = Carbon::createFromFormat('Y-m-d H:i:s.u', $firstItem->Date);
+
+                $keyMainX = $date->copy()->startOfHour()->format('H:i');
+
+                if(!isset($mainX[$keyMainX])) {
+                    $mainX[$keyMainX] = [
+                        'key' =>  $index,
+                        'value' => (int) $date->format('H')
+                    ];
+                }
+
+                return [
+                    'key' => $index,
+                    'value' => round($item->max('Value'), 2)
+                ];
+            })->values();;
+        }
+
+        $data['main_x'] = array_values($mainX);
 
         return response()->json([
             'success' => true,
-            'message' => $pressures
+            'data' => $data
         ]);
+    }
+
+    public function measuringPoint()
+    {
+
     }
 
     public function quantityMonitoring(Request $request)
@@ -194,6 +272,7 @@ class ReportController extends Controller
             }
 
             $data[$key] = [
+                'id' => $report->IDsensor,
                 'quality_criteria' => $idSensors[$report->IDsensor] ?? "-",
                 'unit' => $report->Unit,
                 'status' => $status,
