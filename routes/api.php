@@ -22,7 +22,7 @@ Route::group(['middleware' => 'auth:sanctum', 'prefix' => 'app'], function (){
     Route::get('/check-login', [AuthController::class, 'checkLogin']);
     Route::post('/logout', [AuthController::class, 'logout']);
 
-    Route::get('/measuring-point', [ReportController::class, 'measuringPoint']);
+    Route::get('/quantity-monitoring/detail', [ReportController::class, 'quantityMonitoringDetail']);
     Route::get('monitor-pressure',[ReportController::class, 'monitorPressure']);
     Route::get('monitor-pressure/detail',[ReportController::class, 'monitorPressureDetail']);
 

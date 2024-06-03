@@ -60,22 +60,22 @@ class ReportController extends Controller
                 $data[$key]['date'] = "-";
             }
 
-            if ($value->Unit == 'm3') {
-                $timeFindStart = Carbon::now()->startOfDay()->format('Y-m-d H:i:s');
-                $timeFindEnd = Carbon::now()->subHour()->format('Y-m-d H:i:s');
-                $finData = DB::connection('sqlsrv')->table($tableData)
-                    ->where('IDsensor', $value->IDsensor)
-                    ->whereBetween('Date', [$timeFindStart, $timeFindEnd])
-                    ->first();
-
-                if ($finData) {
-                    $data[$key]['m3InDay'] = round($value->Value - $finData->Value, 2);
-                } else {
-                    $data[$key]['m3InDay'] = 0;
-                }
-
-            }
-
+//            if ($value->Unit == 'm3') {
+//                $timeFindStart = Carbon::now()->startOfDay()->format('Y-m-d H:i:s');
+//                $timeFindEnd = Carbon::now()->subHour()->format('Y-m-d H:i:s');
+//                $finData = DB::connection('sqlsrv')->table($tableData)
+//                    ->where('IDsensor', $value->IDsensor)
+//                    ->whereBetween('Date', [$timeFindStart, $timeFindEnd])
+//                    ->first();
+//
+//                if ($finData) {
+//                    $data[$key]['m3InDay'] = round($value->Value - $finData->Value, 2);
+//                } else {
+//                    $data[$key]['m3InDay'] = 0;
+//                }
+//
+//            }
+            $data[$key]['m3InDay'] = 0;
             $data[$key][$value->Unit] = round($value->Value, 2);
         }
 
@@ -235,9 +235,82 @@ class ReportController extends Controller
         ]);
     }
 
-    public function measuringPoint()
+    public function quantityMonitoringDetail(Request $request)
     {
+        $validate = \Validator::make($request->input(),[
+            'date' => 'required|date_format:Y-m-d'
+        ], [
+            'date.required' => 'Vui lòng chọn ngày',
+            'date.date_format' => 'Sai định dạng'
+        ]);
 
+        if ($validate->fails()){
+            return response()->json([
+                'success' => false,
+                'message' => $validate->errors()
+            ]);
+        }
+
+        $factory = $request->user()->factory;
+        $tableData = $factory->IDnhamay . "Data";
+
+        $date = Carbon::createFromFormat('Y-m-d', $request->get('date'));
+        $start = $date->format('Y-m-d 00:00:00');
+        $end = $date->format('Y-m-d 23:59:59');
+
+        $type = ['mg/l', 'NTU', 'PH'];
+        $sensors = $this->getSensor($factory, $type);
+
+        $idSensors = $sensors->pluck('IDsensor', 'TypeOfSensor')->toArray();
+
+        $results = DB::connection('sqlsrv')->table($tableData)
+            ->whereIn('IDsensor', $idSensors)
+            ->whereIn('Unit', $type)
+            ->whereBetween('Date', [$start, $end])
+            ->orderBy('Date')
+            ->get();
+
+        $results = $results->groupBy('Unit');
+
+        $data = [];
+
+        $mainX = [];
+        foreach ($results as $key => $result) {
+
+            $keyGroup = strtolower($key);
+
+            $groupTimes  = $result->groupBy(function ($item) {
+                return substr($item->Date, 0, 16);
+            });
+            $i = 0;
+
+            $data[$keyGroup] = $groupTimes->map(function ($item) use (&$mainX, &$i){
+                $index = $i++;
+                $firstItem = $item->first();
+                $date = Carbon::createFromFormat('Y-m-d H:i:s.u', $firstItem->Date);
+
+                $keyMainX = $date->copy()->startOfHour()->format('H:i');
+
+                if(!isset($mainX[$keyMainX])) {
+                    $mainX[$keyMainX] = [
+                        'key' =>  $index,
+                        'value' => (int) $date->format('H')
+                    ];
+                }
+
+                return [
+                    'key' => $index,
+                    'value' => round($item->max('Value'), 2)
+                ];
+            })->values();;
+        }
+
+        $data['main_x'] = array_values($mainX);
+
+        return response()->json([
+            'success' => true,
+            'data' => $data
+        ]);
     }
 
     public function quantityMonitoring(Request $request)
@@ -295,9 +368,11 @@ class ReportController extends Controller
         $measuringPoints = $this->getMeasuringPoint($factory, $sensors->pluck('IDthietbi')->unique()->toArray());
         $data = [];
         $idSensorPoints = $sensors->pluck('IDsensor', 'IDthietbi')->toArray();
+
         foreach ($measuringPoints as $key => $measuringPoint) {
             $data[] = [
-                'id' => $idSensorPoints[$key] ?? $key,
+                'id' => $key,
+                'sensor_id' => $idSensorPoints[$key] ?? "",
                 'name' => $measuringPoint
             ];
         }
@@ -369,7 +444,7 @@ class ReportController extends Controller
             $minValue = $items->where('Date', $minDateItem)->pluck('Value')->first();
             $quantity = round($maxValue - $minValue, 2);
             if ($max < $quantity) {
-                $max = $quantity;
+                $max += $quantity;
             }
             $total += $quantity;
             $data[] = [
@@ -384,7 +459,7 @@ class ReportController extends Controller
             'data' => $data,
             'quantity' => [
                 'max' => $this->roundUpToNearest($max),
-                'total' => $total
+                'total' => round($total, 2)
             ]
         ]);
     }
