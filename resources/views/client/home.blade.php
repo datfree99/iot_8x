@@ -734,6 +734,7 @@
 @stop
 
 @section('vendor_scripts')
+    <script type="text/javascript" src="{{asset("assets/js/flatsome-tooltips.js")}}" ></script>
     <script type="text/javascript" src="{{asset("assets/js/flatsome-slider.js")}}" id="flatsome-js-js"></script>
     <script type="text/javascript" src="{{asset("assets/js/flatsome-popup.js")}}" id="flatsome-js-js"></script>
 @endsection
