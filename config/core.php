@@ -15,7 +15,7 @@ return [
         'address_vi' => 'số 11/71B, TDP mới, đường Nguyễn Công Mỹ, phường Ngọc Sơn, quận Kiến An, thành phố Hải Phòng',
         'address_en' => 'No. 11/71B, TDP Moi, Nguyen Cong My Street, Ngoc Son Ward, Kien An District, Hai Phong City',
         'tel' => '0974988606',
-        'email' => 'manager@iotsmart.vn',
+        'email' => 'buiduc.dung@iotsmart.vn',
     ],
     'socials' => [
         'youtube' => 'https://www.youtube.com',

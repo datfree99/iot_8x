@@ -194,9 +194,9 @@ class ReportController extends Controller
                     $date = Carbon::createFromFormat('Y-m-d H:i:s.u', $first->Date);
                     return [
                         'key' => (int) $date->format('H'),
-                        'value' => (float) round($quantity, 2)
+                        'value' => round($quantity, 2)
                     ];
-                })->values();;
+                })->values();
 
                 continue;
             }
