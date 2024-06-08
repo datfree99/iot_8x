@@ -17,6 +17,8 @@ class ReportController extends Controller
         $type = ['m3/h', 'm3', 'bar'];
 
         $sensors = $this->getSensor($factory, $type);
+        $lastItem = $sensors->pop();
+        $sensors->prepend($lastItem);
 
         $idPoints = $sensors->pluck('IDthietbi')->unique()
             ->toArray();
@@ -60,22 +62,22 @@ class ReportController extends Controller
                 $data[$key]['date'] = "-";
             }
 
-//            if ($value->Unit == 'm3') {
-//                $timeFindStart = Carbon::now()->startOfDay()->format('Y-m-d H:i:s');
-//                $timeFindEnd = Carbon::now()->subHour()->format('Y-m-d H:i:s');
-//                $finData = DB::connection('sqlsrv')->table($tableData)
-//                    ->where('IDsensor', $value->IDsensor)
-//                    ->whereBetween('Date', [$timeFindStart, $timeFindEnd])
-//                    ->first();
-//
-//                if ($finData) {
-//                    $data[$key]['m3InDay'] = round($value->Value - $finData->Value, 2);
-//                } else {
-//                    $data[$key]['m3InDay'] = 0;
-//                }
-//
-//            }
-            $data[$key]['m3InDay'] = 0;
+            if ($value->Unit == 'm3') {
+                $timeFindStart = Carbon::now()->startOfDay()->format('Y-m-d H:i:s');
+                $timeFindEnd = Carbon::now()->subHour()->format('Y-m-d H:i:s');
+                $finData = DB::connection('sqlsrv')->table($tableData)
+                    ->where('IDsensor', $value->IDsensor)
+                    ->whereBetween('Date', [$timeFindStart, $timeFindEnd])
+                    ->first();
+
+                if ($finData) {
+                    $data[$key]['m3InDay'] = round($value->Value - $finData->Value, 2);
+                } else {
+                    $data[$key]['m3InDay'] = 0;
+                }
+            }
+
+
             $data[$key][$value->Unit] = round($value->Value, 2);
         }
 
