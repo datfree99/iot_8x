@@ -188,4 +188,9 @@ class HomeController extends Controller
         return $model->take(8)
             ->get(['id', 'title', 'title_en', 'description', 'description_en', 'image', 'slug']);
     }
+
+    public function privacy()
+    {
+        return view('client.privacy');
+    }
 }

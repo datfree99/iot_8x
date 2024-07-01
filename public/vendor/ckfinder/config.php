@@ -32,8 +32,8 @@ $config['authentication'] = function () {
 /*============================ License Key ============================================*/
 // https://ckeditor.com/docs/ckfinder/ckfinder3-php/configuration.html#configuration_options_licenseKey
 
-$config['licenseName'] = 'iot.local';
-$config['licenseKey']  = 'SMDMRCCRPD9T6Q69DDU62H8KX7LJF';
+$config['licenseName'] = 'iotsmart.vn';
+$config['licenseKey']  = 'A323NPVEP47XDQFFF6S4R3NX9Y3AK';
 
 /*============================ CKFinder Internal Directory ============================*/
 // https://ckeditor.com/docs/ckfinder/ckfinder3-php/configuration.html#configuration_options_privateDir
