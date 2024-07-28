@@ -407,7 +407,7 @@ class ReportController extends Controller
         $tableData = $factory->IDnhamay . "Data";
 
         $date = Carbon::createFromFormat('Y-m-d', $request->get('month'). '-01');
-        $start = $date->copy()->firstOfMonth()->format('Y-m-d 00:00:00');
+        $start = $date->copy()->firstOfMonth()->subDay()->format('Y-m-d 00:00:00');
         $end = $date->endOfMonth()->format('Y-m-d 23:59:59');
         $reports = DB::connection('sqlsrv')->table($tableData)
             ->where('IDsensor', $request->get('measuring_point'))
@@ -427,10 +427,14 @@ class ReportController extends Controller
         $total = 0;
         while ($startWhite->lte($endWhite)){
             $key = $startWhite->copy()->format('Y-m-d');
+
+            $keyStart = $startWhite->copy()->subDay()->format('Y-m-d');
+            $keyEnd = $startWhite->copy()->format('Y-m-d');
+
             $i++;
             $startWhite->addDay();
 
-            if (!isset($groupedByDate[$key])) {
+            if (!isset($groupedByDate[$key]) || !isset($groupedByDate[$keyEnd])) {
                 $data[] = [
                     'date' => (string) $i,
                     'quantity' => 0
@@ -439,12 +443,18 @@ class ReportController extends Controller
                 continue;
             }
 
-            $items = $groupedByDate[$key];
-            $maxDateItem = $items->max('Date');
-            $minDateItem = $items->min('Date');
-            $maxValue = $items->where('Date', $maxDateItem)->pluck('Value')->first();
-            $minValue = $items->where('Date', $minDateItem)->pluck('Value')->first();
-            $quantity = round($maxValue - $minValue, 2);
+
+            $beforeItems = $groupedByDate[$keyStart];
+            $afterItems = $groupedByDate[$keyEnd];
+
+
+            $beforeDate = $beforeItems->max('Date');
+            $afterDate = $afterItems->max('Date');
+
+            $beforeValue = $beforeItems->where('Date', $beforeDate)->pluck('Value')->first();
+            $afterValue = $afterItems->where('Date', $afterDate)->pluck('Value')->first();
+
+            $quantity = round($afterValue - $beforeValue, 2);
             if ($max < $quantity) {
                 $max += $quantity;
             }
