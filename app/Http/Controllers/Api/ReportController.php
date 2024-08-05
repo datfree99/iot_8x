@@ -165,7 +165,26 @@ class ReportController extends Controller
 
         $results = $results->groupBy('IDsensor');
 
-        $data = [];
+        $data = [
+            'm3/h' => [
+                [
+                    "key" => 0,
+                    "value" => 0
+                ]
+            ],
+            'm3' => [
+                [
+                    "key" => 0,
+                    "value" => 0
+                ]
+            ],
+            'bar' => [
+                [
+                    "key" => 0,
+                    "value" => 0
+                ]
+            ],
+        ];
 
         $mainX = [];
         foreach ($results as $key => $result) {
@@ -274,7 +293,26 @@ class ReportController extends Controller
 
         $results = $results->groupBy('Unit');
 
-        $data = [];
+        $data = [
+            'mg/l' => [
+                [
+                    "key" => 0,
+                    "value" => 0
+                ]
+            ],
+            'NTU' => [
+                [
+                    "key" => 0,
+                    "value" => 0
+                ]
+            ],
+            'PH' => [
+                [
+                    "key" => 0,
+                    "value" => 0
+                ]
+            ],
+        ];
 
         $mainX = [];
         foreach ($results as $key => $result) {
@@ -503,7 +541,7 @@ class ReportController extends Controller
 
         return DB::connection('sqlsrv')
             ->table($tableSensor)
-            ->whereIn('TypeOfSensor', $type)
+//            ->whereIn('TypeOfSensor', $type)
             ->whereNotNull('IDthietbi')
             ->where('IDthietbi', '<>', 0)
             ->orderBy('IDthietbi')
