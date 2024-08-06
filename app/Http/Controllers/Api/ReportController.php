@@ -403,12 +403,13 @@ class ReportController extends Controller
     public function sensor(Request $request)
     {
         $factory = $request->user()->factory;
-        $type = ['m3'];
+        $type = ['mg/l', 'NTU', 'PH', 'm3/h', 'm3', 'bar'];
         $sensors = $this->getSensor($factory, $type);
         $measuringPoints = $this->getMeasuringPoint($factory, $sensors->pluck('IDthietbi')->unique()->toArray());
         $data = [];
-        $idSensorPoints = $sensors->pluck('IDsensor', 'IDthietbi')->toArray();
-
+        $idSensorPoints = $sensors
+            ->pluck('IDsensor', 'IDthietbi')
+            ->toArray();
         foreach ($measuringPoints as $key => $measuringPoint) {
             $data[] = [
                 'id' => $key,
@@ -541,7 +542,7 @@ class ReportController extends Controller
 
         return DB::connection('sqlsrv')
             ->table($tableSensor)
-//            ->whereIn('TypeOfSensor', $type)
+            ->whereIn('TypeOfSensor', $type)
             ->whereNotNull('IDthietbi')
             ->where('IDthietbi', '<>', 0)
             ->orderBy('IDthietbi')
