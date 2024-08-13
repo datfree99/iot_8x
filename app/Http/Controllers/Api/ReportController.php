@@ -71,14 +71,14 @@ class ReportController extends Controller
                     ->first();
 
                 if ($finData) {
-                    $data[$key]['m3InDay'] = round($value->Value - $finData->Value, 2);
+                    $data[$key]['m3InDay'] = max(round($value->Value - $finData->Value, 2), 0);
                 } else {
                     $data[$key]['m3InDay'] = 0;
                 }
             }
 
 
-            $data[$key][$value->Unit] = round($value->Value, 2);
+            $data[$key][$value->Unit] = max(round($value->Value, 2), 0);
         }
 
         $reports = [];
@@ -209,7 +209,7 @@ class ReportController extends Controller
 
                     $maxValue = $items->where('Date', $maxDateItem)->pluck('Value')->first();
                     $minValue = $items->where('Date', $minDateItem)->pluck('Value')->first();
-                    $quantity = round($maxValue - $minValue, 2);
+                    $quantity = max(round($maxValue - $minValue, 2), 0);
 
                     $first = $items->first();
                     $date = Carbon::createFromFormat('Y-m-d H:i:s.u', $first->Date);
@@ -243,7 +243,7 @@ class ReportController extends Controller
 
                 return [
                     'key' => $index,
-                    'value' => round($item->max('Value'), 2)
+                    'value' => max(round($item->max('Value'), 2), 0)
                 ];
             })->values();;
         }
@@ -340,7 +340,7 @@ class ReportController extends Controller
 
                 return [
                     'key' => $index,
-                    'value' => round($item->max('Value'), 2)
+                    'value' => max(round($item->max('Value'), 2), 0)
                 ];
             })->values();;
         }
@@ -389,7 +389,7 @@ class ReportController extends Controller
                 'quality_criteria' => $idSensors[$report->IDsensor] ?? "-",
                 'unit' => $report->Unit,
                 'status' => $status,
-                'measured_value' => (string)  round($report->Value, 2),
+                'measured_value' => (string)  max(round($report->Value, 2), 0),
                 'update_time' => $date
             ];
         }
@@ -446,7 +446,7 @@ class ReportController extends Controller
         $tableData = $factory->IDnhamay . "Data";
 
         $date = Carbon::createFromFormat('Y-m-d', $request->get('month'). '-01');
-        $start = $date->copy()->firstOfMonth()->subDay()->format('Y-m-d 00:00:00');
+        $start = $date->copy()->firstOfMonth()->format('Y-m-d 00:00:00');
         $end = $date->endOfMonth()->format('Y-m-d 23:59:59');
         $reports = DB::connection('sqlsrv')->table($tableData)
             ->where('IDsensor', $request->get('measuring_point'))
@@ -466,14 +466,10 @@ class ReportController extends Controller
         $total = 0;
         while ($startWhite->lte($endWhite)){
             $key = $startWhite->copy()->format('Y-m-d');
-
-            $keyStart = $startWhite->copy()->subDay()->format('Y-m-d');
-            $keyEnd = $startWhite->copy()->format('Y-m-d');
-
             $i++;
             $startWhite->addDay();
 
-            if (!isset($groupedByDate[$key]) || !isset($groupedByDate[$keyEnd])) {
+            if (!isset($groupedByDate[$key])) {
                 $data[] = [
                     'date' => (string) $i,
                     'quantity' => 0
@@ -482,21 +478,17 @@ class ReportController extends Controller
                 continue;
             }
 
+            $items = $groupedByDate[$key];
+            $maxDateItem = $items->max('Date');
+            $minDateItem = $items->min('Date');
+            $maxValue = $items->where('Date', $maxDateItem)->pluck('Value')->first();
+            $minValue = $items->where('Date', $minDateItem)->pluck('Value')->first();
+            $quantity = max(round($maxValue - $minValue, 2), 0);
 
-            $beforeItems = $groupedByDate[$keyStart];
-            $afterItems = $groupedByDate[$keyEnd];
-
-
-            $beforeDate = $beforeItems->max('Date');
-            $afterDate = $afterItems->max('Date');
-
-            $beforeValue = $beforeItems->where('Date', $beforeDate)->pluck('Value')->first();
-            $afterValue = $afterItems->where('Date', $afterDate)->pluck('Value')->first();
-
-            $quantity = round($afterValue - $beforeValue, 2);
             if ($max < $quantity) {
-                $max += $quantity;
+                $max = $quantity;
             }
+
             $total += $quantity;
             $data[] = [
                 'date' =>(string) $i,
