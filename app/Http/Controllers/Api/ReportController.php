@@ -448,15 +448,53 @@ class ReportController extends Controller
         $date = Carbon::createFromFormat('Y-m-d', $request->get('month'). '-01');
         $start = $date->copy()->firstOfMonth()->format('Y-m-d 00:00:00');
         $end = $date->endOfMonth()->format('Y-m-d 23:59:59');
-        $reports = DB::connection('sqlsrv')->table($tableData)
-            ->where('IDsensor', $request->get('measuring_point'))
-            ->whereBetween('Date', [$start, $end])
-            ->get();
+        $measuringPoint = $request->get('measuring_point');
 
-        $groupedByDate = $reports->groupBy(function ($item) {
-            return substr($item->Date, 0, 10);
-        });
+        $tableSensor = $factory->IDnhamay. "listsensor";
+        $sensor = DB::connection('sqlsrv')
+            ->table($tableSensor)
+            ->where('IDsensor', $measuringPoint)
+            ->first();
 
+        if (!$sensor) {
+            return response()->json([
+                'success' => false,
+                'message' => "Invalid"
+            ]);
+        }
+
+        $sensorM3 = DB::connection('sqlsrv')
+            ->table($tableSensor)
+            ->where('IDthietbi', $sensor->IDthietbi)
+            ->where('TypeOfSensor', 'm3')
+            ->first();
+
+        if (!$sensorM3 || empty($sensorM3->IDsensor)) {
+            return response()->json([
+                'success' => false,
+                'message' => "Invalid"
+            ]);
+        }
+
+        $reports = DB::connection('sqlsrv')->select("WITH RankedValues AS (
+            SELECT
+                Date,
+                VALUE,
+                ROW_NUMBER() OVER (PARTITION BY CAST(Date AS DATE) ORDER BY Date DESC) AS rn
+            FROM
+                nhamay1Data
+            where DATE between '$start' and '$end'
+            and IDsensor = '{$sensorM3->IDsensor}'
+        )
+        SELECT
+            CONVERT(VARCHAR(10), Date, 23) as Date,
+            VALUE
+        FROM
+            RankedValues
+        WHERE
+                rn = 1");
+
+        $groupedByDate = collect($reports)->keyBy('Date');
 
         $data = [];
         $startWhite = Carbon::createFromFormat('Y-m-d', $request->get('month'). '-01')->firstOfMonth();
@@ -464,25 +502,42 @@ class ReportController extends Controller
         $i = 0;
         $max = 0;
         $total = 0;
+
         while ($startWhite->lte($endWhite)){
             $key = $startWhite->copy()->format('Y-m-d');
             $i++;
             $startWhite->addDay();
 
-            if (!isset($groupedByDate[$key])) {
-                $data[] = [
-                    'date' => (string) $i,
-                    'quantity' => 0
-                ];
-
-                continue;
+            if ($i == 1 && !isset($groupedByDate[$key]) || (!isset($groupedByDate[$key]) && $key > Carbon::now()->format('Y-m-d'))) {
+                break;
             }
 
-            $items = $groupedByDate[$key];
-            $maxDateItem = $items->max('Date');
-            $minDateItem = $items->min('Date');
-            $maxValue = $items->where('Date', $maxDateItem)->pluck('Value')->first();
-            $minValue = $items->where('Date', $minDateItem)->pluck('Value')->first();
+            if (!isset($groupedByDate[$key])) {
+                $data[$i] = [
+                    'date' =>(string) $i,
+                    'quantity' => $data[$i - 1]['quantity']
+                ];
+            }
+
+            if($i == 1){
+                $beforeItem = DB::connection('sqlsrv')->table($tableData)
+                    ->where('IDsensor', $sensorM3->IDsensor)
+                    ->where('Date', "<", $key)
+                    ->orderByDesc('STT')
+                    ->first(['Date', 'VALUE']);
+            }
+
+            $afterItem = $groupedByDate[$key];
+
+            $minValue = 0;
+            $maxValue = 0;
+
+            if ($afterItem) {
+                $minValue = isset($beforeItem->VALUE) ? $beforeItem->VALUE : 0;
+                $maxValue = $afterItem->VALUE;
+                $beforeItem = $afterItem;
+            }
+
             $quantity = max(round($maxValue - $minValue, 2), 0);
 
             if ($max < $quantity) {
@@ -490,7 +545,7 @@ class ReportController extends Controller
             }
 
             $total += $quantity;
-            $data[] = [
+            $data[$i] = [
                 'date' =>(string) $i,
                 'quantity' => $quantity
             ];
@@ -499,7 +554,7 @@ class ReportController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $data,
+            'data' => array_values($data),
             'quantity' => [
                 'max' => $this->roundUpToNearest($max),
                 'total' => round($total, 2)
