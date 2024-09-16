@@ -184,8 +184,9 @@ class ReportController extends Controller
                     "value" => 0
                 ]
             ],
+            'total_m3' => 0,
         ];
-
+        $total_m3 = 0;
         $mainX = [];
         foreach ($results as $key => $result) {
 
@@ -201,7 +202,7 @@ class ReportController extends Controller
                     return substr($item->Date, 0, 13);
                 });
 
-                $data[$keyGroup] = $groupTimes->map(function ($items){
+                $data[$keyGroup] = $groupTimes->map(function ($items) use (&$total_m3){
 
                     $maxDateItem = $items->max('Date');
                     $minDateItem = $items->min('Date');
@@ -213,6 +214,9 @@ class ReportController extends Controller
 
                     $first = $items->first();
                     $date = Carbon::createFromFormat('Y-m-d H:i:s.u', $first->Date);
+
+                    $total_m3 += $quantity;
+
                     return [
                         'key' => (int) $date->format('H'),
                         'value' => round($quantity, 2)
@@ -249,7 +253,7 @@ class ReportController extends Controller
         }
 
         $data['main_x'] = array_values($mainX);
-
+        $data['total_m3'] = $total_m3;
         return response()->json([
             'success' => true,
             'data' => $data
@@ -482,7 +486,7 @@ class ReportController extends Controller
                 VALUE,
                 ROW_NUMBER() OVER (PARTITION BY CAST(Date AS DATE) ORDER BY Date DESC) AS rn
             FROM
-                nhamay1Data
+                $tableData
             where DATE between '$start' and '$end'
             and IDsensor = '{$sensorM3->IDsensor}'
         )
@@ -508,15 +512,17 @@ class ReportController extends Controller
             $i++;
             $startWhite->addDay();
 
-            if ($i == 1 && !isset($groupedByDate[$key]) || (!isset($groupedByDate[$key]) && $key > Carbon::now()->format('Y-m-d'))) {
-                break;
-            }
-
             if (!isset($groupedByDate[$key])) {
+
+                if($key > Carbon::now()->format('Y-m-d')) {
+                    break;
+                }
+
                 $data[$i] = [
                     'date' =>(string) $i,
-                    'quantity' => $data[$i - 1]['quantity']
+                    'quantity' => $data[$i - 1]['quantity'] ?? 0,
                 ];
+                continue;
             }
 
             if($i == 1){
