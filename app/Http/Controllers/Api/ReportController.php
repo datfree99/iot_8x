@@ -29,7 +29,13 @@ class ReportController extends Controller
         $idSensors = $sensors->pluck('IDsensor')->toArray();
         $reports = $this->getData($factory, $idSensors, $type);
 
-        $data = [];
+
+        foreach ($measuringPoints as $key => $measuringPoint) {
+            if (!isset($data[$key])) {
+                $data[$key]['name']  = $measuringPoint;
+            }
+        }
+
 
         foreach ($sensors as $sensor) {
             $key = $sensor->IDthietbi;
@@ -253,7 +259,7 @@ class ReportController extends Controller
         }
 
         $data['main_x'] = array_values($mainX);
-        $data['total_m3'] = $total_m3;
+        $data['total_m3'] = round($total_m3, 2);
         return response()->json([
             'success' => true,
             'data' => $data
@@ -609,6 +615,7 @@ class ReportController extends Controller
         return DB::connection('sqlsrv')
             ->table($tablePoint)
             ->whereIn('ID', $idMeasuringPoints)
+            ->orderBy('DisplayOrder')
             ->pluck('Ten', 'ID')
             ->toArray();
     }
