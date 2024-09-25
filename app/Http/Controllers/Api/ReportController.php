@@ -518,6 +518,14 @@ class ReportController extends Controller
             $i++;
             $startWhite->addDay();
 
+            if($i == 1){
+                $beforeItem = DB::connection('sqlsrv')->table($tableData)
+                    ->where('IDsensor', $sensorM3->IDsensor)
+                    ->where('Date', "<", $key)
+                    ->orderByDesc('STT')
+                    ->first(['Date', 'VALUE']);
+            }
+
             if (!isset($groupedByDate[$key])) {
 
                 if($key > Carbon::now()->format('Y-m-d')) {
@@ -526,17 +534,9 @@ class ReportController extends Controller
 
                 $data[$i] = [
                     'date' =>(string) $i,
-                    'quantity' => $data[$i - 1]['quantity'] ?? 0,
+                    'quantity' => 0,
                 ];
                 continue;
-            }
-
-            if($i == 1){
-                $beforeItem = DB::connection('sqlsrv')->table($tableData)
-                    ->where('IDsensor', $sensorM3->IDsensor)
-                    ->where('Date', "<", $key)
-                    ->orderByDesc('STT')
-                    ->first(['Date', 'VALUE']);
             }
 
             $afterItem = $groupedByDate[$key];
