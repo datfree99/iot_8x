@@ -190,7 +190,6 @@ class ReportController extends Controller
                     "value" => 0
                 ]
             ],
-            'total_m3' => 0,
         ];
         $total_m3 = 0;
         $mainX = [];
@@ -259,7 +258,8 @@ class ReportController extends Controller
         }
 
         $data['main_x'] = array_values($mainX);
-        $data['total_m3'] = round($total_m3, 2);
+        $data['total_m3'] = number_format($total_m3, 2, '.', '');
+
         return response()->json([
             'success' => true,
             'data' => $data
