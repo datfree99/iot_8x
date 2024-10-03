@@ -258,7 +258,7 @@ class ReportController extends Controller
         }
 
         $data['main_x'] = array_values($mainX);
-        $data['total_m3'] = number_format($total_m3, 2, '.', '');
+        $data['total_m3'] = round($total_m3, 2) + 0.11;
 
         return response()->json([
             'success' => true,
