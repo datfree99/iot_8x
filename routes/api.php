@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ReportController;
+use App\Http\Controllers\Api\ReportV2Controller;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,38 +19,30 @@ use App\Http\Controllers\Api\ReportController;
 
 Route::post('app/login', [AuthController::class, 'login']);
 
+//Route::group(['middleware' => 'auth:sanctum', 'prefix' => 'app'], function (){
+//    Route::get('/check-login', [AuthController::class, 'checkLogin']);
+//    Route::post('/logout', [AuthController::class, 'logout']);
+//
+//    Route::get('/quantity-monitoring/detail', [ReportController::class, 'quantityMonitoringDetail']);
+//    Route::get('monitor-pressure',[ReportController::class, 'monitorPressure']);
+//    Route::get('monitor-pressure/detail',[ReportController::class, 'monitorPressureDetail']);
+//
+//    Route::get('quantity-monitoring',[ReportController::class, 'quantityMonitoring']);
+//    Route::get('sensor',[ReportController::class, 'sensor']);
+//    Route::get('output-chart',[ReportController::class, 'outputChart']);
+//});
+
 Route::group(['middleware' => 'auth:sanctum', 'prefix' => 'app'], function (){
     Route::get('/check-login', [AuthController::class, 'checkLogin']);
     Route::post('/logout', [AuthController::class, 'logout']);
 
-    Route::get('/quantity-monitoring/detail', [ReportController::class, 'quantityMonitoringDetail']);
-    Route::get('monitor-pressure',[ReportController::class, 'monitorPressure']);
-    Route::get('monitor-pressure/detail',[ReportController::class, 'monitorPressureDetail']);
-
-    Route::get('quantity-monitoring',[ReportController::class, 'quantityMonitoring']);
-    Route::get('sensor',[ReportController::class, 'sensor']);
-    Route::get('output-chart',[ReportController::class, 'outputChart']);
+    Route::get('monitor-pressure',[ReportV2Controller::class, 'monitorPressure']);
+    Route::get('monitor-pressure/detail',[ReportV2Controller::class, 'monitorPressureDetail']);
 
 
+    Route::get('quantity-monitoring',[ReportV2Controller::class, 'quantityMonitoring']);
+    Route::get('/quantity-monitoring/detail', [ReportV2Controller::class, 'quantityMonitoringDetail']);
+
+    Route::get('sensor',[ReportV2Controller::class, 'sensor']);
+    Route::get('output-chart',[ReportV2Controller::class, 'outputChart']);
 });
-
-
-
-
-//Route::post('app/check-login', function (Request $request){
-//
-//    if ($request->get('token') == 'xxxxxxxxxxxxxxxxx123') {
-//        return response()->json([
-//            'success' => true,
-//        ]);
-//    }
-//
-//    return response()->json([
-//        'success' => false,
-//        'message' => 'Token hết hạn'
-//    ]);
-//});
-//
-//Route::get('pressure', [\App\Http\Controllers\TestController::class, 'pressure']);
-//Route::get('yield', [\App\Http\Controllers\TestController::class, 'yield']);
-
