@@ -13,80 +13,94 @@ class ReportController extends Controller
     public function monitorPressure(Request $request)
     {
         $factory = $request->user()->factory;
+
         $type = ['m3/h', 'm3', 'bar'];
 
-        // Lấy dữ liệu cảm biến
         $sensors = $this->getSensor($factory, $type);
         $lastItem = $sensors->pop();
         $sensors->prepend($lastItem);
 
-        // Lấy ID thiết bị và điểm đo
-        $idPoints = $sensors->pluck('IDthietbi')->unique()->toArray();
+        $idPoints = $sensors->pluck('IDthietbi')->unique()
+            ->toArray();
+
         $measuringPoints = $this->getMeasuringPoint($factory, $idPoints);
 
-        // Lấy dữ liệu cảm biến theo nhóm
         $tableData = $factory->IDnhamay . "Data";
         $idSensors = $sensors->pluck('IDsensor')->toArray();
+        $reports = $this->getData($factory, $idSensors, $type);
 
-        // Truy vấn toàn bộ dữ liệu một lần
-        $rawData = DB::connection('sqlsrv')->table($tableData)
-            ->whereIn('IDsensor', $idSensors)
-            ->whereIn('Unit', $type)
-            ->orderBy('Date', 'desc')
-            ->get();
 
-        // Nhóm dữ liệu theo IDsensor
-        $groupedData = $rawData->groupBy('IDsensor');
-        $data = [];
+        foreach ($measuringPoints as $key => $measuringPoint) {
+            if (!isset($data[$key])) {
+                $data[$key]['name'] = $measuringPoint;
+            }
+        }
+
 
         foreach ($sensors as $sensor) {
             $key = $sensor->IDthietbi;
 
-            // Khởi tạo giá trị mặc định
-            $data[$key] = [
-                'name' => $measuringPoints[$key] ?? '-',
-                'date' => '-',
-                'm3/h' => '-',
-                'm3' => '-',
-                'bar' => '-',
-                'm3InDay' => '-',
-            ];
+            if (!isset($data[$key])) {
+                $data[$key]['name'] = $measuringPoints[$key] ?? '-';
+            }
 
-            // Lấy giá trị mới nhất
-            $sensorData = $groupedData[$sensor->IDsensor]->first() ?? null;
+            if (isset($reports[$sensor->IDsensor])) {
+                $value = $reports[$sensor->IDsensor];
+            } else {
+                $value = DB::connection('sqlsrv')->table($tableData)
+                    ->where('IDsensor', $sensor->IDsensor)
+                    ->whereIn('Unit', $type)
+                    ->whereNotNull('Date')
+                    ->orderByDesc('Date')
+                    ->first();
 
-            if ($sensorData) {
-                $data[$key][$sensorData->Unit] = max(round($sensorData->Value, 2), 0);
-
-                try {
-                    $carbonDate = substr($sensorData->Date, 0, 16); // Format nhanh hơn dùng Carbon
-                    $data[$key]['date'] = $carbonDate;
-                } catch (\Exception $e) {
-                    $data[$key]['date'] = '-';
-                }
-
-                // Tính toán m3InDay nếu Unit là 'm3'
-                if ($sensorData->Unit == 'm3') {
-                    $timeFindStart = Carbon::now()->startOfDay()->format('Y-m-d H:i:s');
-                    $timeFindEnd = Carbon::now()->subHour()->format('Y-m-d H:i:s');
-                    $finData = $groupedData[$sensor->IDsensor]->whereBetween('Date', [$timeFindStart, $timeFindEnd])->first();
-
-                    $data[$key]['m3InDay'] = $finData
-                        ? max(round($sensorData->Value - $finData->Value, 2), 0)
-                        : 0;
+                if (!$value) {
+                    continue;
                 }
             }
+
+            try {
+                $carbonDate = Carbon::createFromFormat('Y-m-d H:i:s.u', $value->Date)->format('Y-m-d H:i');
+                if (!isset($data[$key]['date']) || $data[$key]['date'] < $carbonDate) {
+                    $data[$key]['date'] = $carbonDate;
+                }
+            } catch (\Exception $e) {
+                $data[$key]['date'] = "-";
+            }
+
+            if ($value->Unit == 'm3') {
+                $timeFindStart = Carbon::now()->startOfDay()->format('Y-m-d H:i:s');
+                $timeFindEnd = Carbon::now()->subHour()->format('Y-m-d H:i:s');
+                $finData = DB::connection('sqlsrv')->table($tableData)
+                    ->where('IDsensor', $value->IDsensor)
+                    ->whereBetween('Date', [$timeFindStart, $timeFindEnd])
+                    ->first();
+
+                if ($finData) {
+                    $data[$key]['m3InDay'] = max(round($value->Value - $finData->Value, 2), 0);
+                } else {
+                    $data[$key]['m3InDay'] = 0;
+                }
+            }
+
+
+            $data[$key][$value->Unit] = max(round($value->Value, 2), 0);
         }
 
-        // Xử lý trạng thái (active/inactive)
         $reports = [];
-        $currentTime = Carbon::now();
-        $fiveMinutesBefore = $currentTime->copy()->subMinutes(5);
-
         foreach ($data as $key => $item) {
-            $status = 'inactive';
-            if ($item['date'] !== '-' && strtotime($item['date']) >= $fiveMinutesBefore->timestamp) {
-                $status = 'active';
+            try {
+                $dateToCheck = Carbon::parse($item['date']);
+                $currentDate = Carbon::now();
+                $fiveMinutesBefore = $currentDate->copy()->subMinutes(5);
+
+                if ($dateToCheck->lessThan($currentDate) && $dateToCheck->greaterThanOrEqualTo($fiveMinutesBefore)) {
+                    $status = 'active';
+                } else {
+                    $status = 'inactive';
+                }
+            } catch (\Exception $e) {
+                $status = 'inactive';
             }
 
             $reports[] = [
@@ -99,14 +113,14 @@ class ReportController extends Controller
                 'dailyOutput' => (string) ($item['m3InDay'] ?? '-'),
                 'total' => (string) ($item['m3'] ?? '-'),
             ];
+
         }
 
         return response()->json([
             'success' => true,
-            'data' => $reports,
+            'data' => $reports
         ]);
     }
-
 
     public function monitorPressureDetail(Request $request)
     {
@@ -631,18 +645,20 @@ class ReportController extends Controller
     {
         $tableData = $factory->IDnhamay . "Data";
 
-        $idSensors = "'" . implode("', '", $idMeasuringPoints) . "'";
-        $type = "'" . implode("', '", $type) . "'";
+        $start = Carbon::now()->subMinutes(10);
+        $end = Carbon::now();
 
-        $start = Carbon::now()->subMinutes(10)->format('Y-m-d H:i:s');
-        $end = Carbon::now()->format('Y-m-d H:i:s');
+        $reports = DB::connection('sqlsrv')->table($tableData)
+            ->select('IDsensor', 'Unit', 'Value', 'Date')
+            ->whereBetween('Date', [$start, $end])
+            ->whereIn('Unit', $type)
+            ->whereIn('IDsensor', $idMeasuringPoints)
+            ->orderBy('Date', 'desc')
+            ->get()
+            ->groupBy('IDsensor')
+            ->map(function ($items) {
+                return $items->first(); // Lấy bản ghi mới nhất
+            });
 
-        $reports = DB::connection('sqlsrv')->select("WITH OrderedData AS (SELECT [IDsensor], [Unit], Value, [Date], ROW_NUMBER() OVER (PARTITION BY [IDsensor], [Unit] ORDER BY [Date] DESC) AS rn
-        FROM [$tableData]
-        WHERE [Date] BETWEEN '$start' AND '$end'
-        AND [Unit] IN ($type)
-        AND [IDsensor] IN ($idSensors)) SELECT [IDsensor], [Unit], Value, [Date] FROM OrderedData WHERE rn = 1 ORDER BY [Date] DESC;");
-
-        return collect($reports)->keyBy('IDsensor');
     }
 }
