@@ -23,7 +23,7 @@ Route::group(['middleware' => 'auth:sanctum', 'prefix' => 'app'], function (){
     Route::post('/logout', [AuthController::class, 'logout']);
 
     Route::get('/quantity-monitoring/detail', [ReportController::class, 'quantityMonitoringDetail']);
-    Route::get('monitor-pressure',[ReportController::class, 'monitorPressure']);
+    Route::get('monitor-pressure',[ReportController::class, 'monitorPressure']); // tính ra các json giá trí điểm đo. phần này tính đang bị nặng
     Route::get('monitor-pressure/detail',[ReportController::class, 'monitorPressureDetail']);
 
     Route::get('quantity-monitoring',[ReportController::class, 'quantityMonitoring']);
