@@ -645,20 +645,29 @@ class ReportController extends Controller
     {
         $tableData = $factory->IDnhamay . "Data";
 
-        $start = Carbon::now()->subMinutes(10);
-        $end = Carbon::now();
+        // Xác định khoảng thời gian
+        $start = Carbon::now()->subMinutes(10)->format('Y-m-d H:i:s');
+        $end = Carbon::now()->format('Y-m-d H:i:s');
 
-        $reports = DB::connection('sqlsrv')->table($tableData)
+        // Truy vấn bằng Query Builder
+        $query = DB::connection('sqlsrv')
+            ->table($tableData)
             ->select('IDsensor', 'Unit', 'Value', 'Date')
             ->whereBetween('Date', [$start, $end])
             ->whereIn('Unit', $type)
             ->whereIn('IDsensor', $idMeasuringPoints)
-            ->orderBy('Date', 'desc')
+            ->orderBy('Date', 'desc');
+
+        // Sử dụng groupBy để lấy bản ghi mới nhất cho mỗi IDsensor
+        $reports = $query
             ->get()
             ->groupBy('IDsensor')
             ->map(function ($items) {
-                return $items->first(); // Lấy bản ghi mới nhất
+                return $items->sortByDesc('Date')->first(); // Lấy bản ghi mới nhất cho từng IDsensor
             });
 
+        // Trả về Collection với key là IDsensor
+        return $reports->keyBy('IDsensor');
     }
+
 }
