@@ -32,7 +32,7 @@ class ReportController extends Controller
 
         foreach ($measuringPoints as $key => $measuringPoint) {
             if (!isset($data[$key])) {
-                $data[$key]['name'] = $measuringPoint;
+                $data[$key]['name']  = $measuringPoint;
             }
         }
 
@@ -41,12 +41,12 @@ class ReportController extends Controller
             $key = $sensor->IDthietbi;
 
             if (!isset($data[$key])) {
-                $data[$key]['name'] = $measuringPoints[$key] ?? '-';
+                $data[$key]['name']  = $measuringPoints[$key] ?? '-';
             }
 
             if (isset($reports[$sensor->IDsensor])) {
                 $value = $reports[$sensor->IDsensor];
-            } else {
+            }else {
                 $value = DB::connection('sqlsrv')->table($tableData)
                     ->where('IDsensor', $sensor->IDsensor)
                     ->whereIn('Unit', $type)
@@ -54,7 +54,7 @@ class ReportController extends Controller
                     ->orderByDesc('Date')
                     ->first();
 
-                if (!$value) {
+                if(!$value){
                     continue;
                 }
             }
@@ -64,7 +64,7 @@ class ReportController extends Controller
                 if (!isset($data[$key]['date']) || $data[$key]['date'] < $carbonDate) {
                     $data[$key]['date'] = $carbonDate;
                 }
-            } catch (\Exception $e) {
+            }catch (\Exception $e){
                 $data[$key]['date'] = "-";
             }
 
@@ -95,11 +95,11 @@ class ReportController extends Controller
                 $fiveMinutesBefore = $currentDate->copy()->subMinutes(5);
 
                 if ($dateToCheck->lessThan($currentDate) && $dateToCheck->greaterThanOrEqualTo($fiveMinutesBefore)) {
-                    $status = 'active';
+                   $status = 'active';
                 } else {
                     $status = 'inactive';
                 }
-            } catch (\Exception $e) {
+            }catch (\Exception $e){
                 $status = 'inactive';
             }
 
@@ -111,7 +111,7 @@ class ReportController extends Controller
                 'pressure' => (string) ($item['bar'] ?? '-'),
                 'waterFlow' => (string) ($item['m3/h'] ?? '-'),
                 'dailyOutput' => (string) ($item['m3InDay'] ?? '-'),
-                'total' => (string) ($item['m3'] ?? '-'),
+                'total' => (string) ( $item['m3'] ?? '-'),
             ];
 
         }
@@ -124,7 +124,7 @@ class ReportController extends Controller
 
     public function monitorPressureDetail(Request $request)
     {
-        $validate = \Validator::make($request->input(), [
+        $validate = \Validator::make($request->input(),[
             'measuring_point' => 'required',
             'date' => 'required|date_format:Y-m-d'
         ], [
@@ -133,7 +133,7 @@ class ReportController extends Controller
             'date.date_format' => 'Sai định dạng'
         ]);
 
-        if ($validate->fails()) {
+        if ($validate->fails()){
             return response()->json([
                 'success' => false,
                 'message' => $validate->errors()
@@ -149,7 +149,7 @@ class ReportController extends Controller
 
         $type = ['m3/h', 'm3', 'bar'];
 
-        $tableSensor = $factory->IDnhamay . "listsensor";
+        $tableSensor = $factory->IDnhamay. "listsensor";
 
         $sensors = DB::connection('sqlsrv')
             ->table($tableSensor)
@@ -214,15 +214,15 @@ class ReportController extends Controller
 
             if ($keyGroup == 'm3') {
 
-                $groupTimes = $result->groupBy(function ($item) {
+                $groupTimes  = $result->groupBy(function ($item) {
                     return substr($item->Date, 0, 13);
                 });
 
                 $i = 1;
                 $minValue = 0;
-                $data[$keyGroup] = $groupTimes->map(function ($items) use (&$total_m3, &$i, &$minValue, $tableData, $sensorId, $date) {
+                $data[$keyGroup] = $groupTimes->map(function ($items) use (&$total_m3, &$i, &$minValue, $tableData, $sensorId, $date){
 
-                    if ($i == 1) {
+                    if($i == 1){
                         $minValue = DB::connection('sqlsrv')->table($tableData)
                             ->where('IDsensor', $sensorId)
                             ->where('Date', "<", $date->format("Y-m-d"))
@@ -249,21 +249,21 @@ class ReportController extends Controller
                 continue;
             }
 
-            $groupTimes = $result->groupBy(function ($item) {
+            $groupTimes  = $result->groupBy(function ($item) {
                 return substr($item->Date, 0, 16);
             });
             $i = 0;
 
-            $data[$keyGroup] = $groupTimes->map(function ($item) use (&$mainX, &$i) {
+            $data[$keyGroup] = $groupTimes->map(function ($item) use (&$mainX, &$i){
                 $index = $i++;
                 $firstItem = $item->first();
                 $date = Carbon::createFromFormat('Y-m-d H:i:s.u', $firstItem->Date);
 
                 $keyMainX = $date->copy()->startOfHour()->format('H:i');
 
-                if (!isset($mainX[$keyMainX])) {
+                if(!isset($mainX[$keyMainX])) {
                     $mainX[$keyMainX] = [
-                        'key' => $index,
+                        'key' =>  $index,
                         'value' => (int) $date->format('H')
                     ];
                 }
@@ -272,8 +272,7 @@ class ReportController extends Controller
                     'key' => $index,
                     'value' => max(round($item->max('Value'), 2), 0)
                 ];
-            })->values();
-            ;
+            })->values();;
         }
 
         $data['main_x'] = array_values($mainX);
@@ -287,14 +286,14 @@ class ReportController extends Controller
 
     public function quantityMonitoringDetail(Request $request)
     {
-        $validate = \Validator::make($request->input(), [
+        $validate = \Validator::make($request->input(),[
             'date' => 'required|date_format:Y-m-d'
         ], [
             'date.required' => 'Vui lòng chọn ngày',
             'date.date_format' => 'Sai định dạng'
         ]);
 
-        if ($validate->fails()) {
+        if ($validate->fails()){
             return response()->json([
                 'success' => false,
                 'message' => $validate->errors()
@@ -348,21 +347,21 @@ class ReportController extends Controller
 
             $keyGroup = strtolower($key);
 
-            $groupTimes = $result->groupBy(function ($item) {
+            $groupTimes  = $result->groupBy(function ($item) {
                 return substr($item->Date, 0, 16);
             });
             $i = 0;
 
-            $data[$keyGroup] = $groupTimes->map(function ($item) use (&$mainX, &$i) {
+            $data[$keyGroup] = $groupTimes->map(function ($item) use (&$mainX, &$i){
                 $index = $i++;
                 $firstItem = $item->first();
                 $date = Carbon::createFromFormat('Y-m-d H:i:s.u', $firstItem->Date);
 
                 $keyMainX = $date->copy()->startOfHour()->format('H:i');
 
-                if (!isset($mainX[$keyMainX])) {
+                if(!isset($mainX[$keyMainX])) {
                     $mainX[$keyMainX] = [
-                        'key' => $index,
+                        'key' =>  $index,
                         'value' => (int) $date->format('H')
                     ];
                 }
@@ -371,8 +370,7 @@ class ReportController extends Controller
                     'key' => $index,
                     'value' => max(round($item->max('Value'), 2), 0)
                 ];
-            })->values();
-            ;
+            })->values();;
         }
 
         $data['main_x'] = array_values($mainX);
@@ -410,7 +408,7 @@ class ReportController extends Controller
                 }
 
                 $date = $carbonDate->format('Y-m-d H:i');
-            } catch (\Exception $e) {
+            }catch (\Exception $e){
 
             }
 
@@ -419,7 +417,7 @@ class ReportController extends Controller
                 'quality_criteria' => $idSensors[$report->IDsensor] ?? "-",
                 'unit' => $report->Unit,
                 'status' => $status,
-                'measured_value' => (string) max(round($report->Value, 2), 0),
+                'measured_value' => (string)  max(round($report->Value, 2), 0),
                 'update_time' => $date
             ];
         }
@@ -456,7 +454,7 @@ class ReportController extends Controller
 
     public function outputChart(Request $request)
     {
-        $validate = \Validator::make($request->input(), [
+        $validate = \Validator::make($request->input(),[
             'measuring_point' => 'required',
             'month' => 'required|date_format:Y-m'
         ], [
@@ -465,7 +463,7 @@ class ReportController extends Controller
             'month.date_format' => 'Sai định dạng'
         ]);
 
-        if ($validate->fails()) {
+        if ($validate->fails()){
             return response()->json([
                 'success' => false,
                 'message' => $validate->errors()
@@ -475,12 +473,12 @@ class ReportController extends Controller
 
         $tableData = $factory->IDnhamay . "Data";
 
-        $date = Carbon::createFromFormat('Y-m-d', $request->get('month') . '-01');
+        $date = Carbon::createFromFormat('Y-m-d', $request->get('month'). '-01');
         $start = $date->copy()->firstOfMonth()->format('Y-m-d 00:00:00');
         $end = $date->endOfMonth()->format('Y-m-d 23:59:59');
         $measuringPoint = $request->get('measuring_point');
 
-        $tableSensor = $factory->IDnhamay . "listsensor";
+        $tableSensor = $factory->IDnhamay. "listsensor";
         $sensor = DB::connection('sqlsrv')
             ->table($tableSensor)
             ->where('IDsensor', $measuringPoint)
@@ -527,18 +525,18 @@ class ReportController extends Controller
         $groupedByDate = collect($reports)->keyBy('Date');
 
         $data = [];
-        $startWhite = Carbon::createFromFormat('Y-m-d', $request->get('month') . '-01')->firstOfMonth();
-        $endWhite = Carbon::createFromFormat('Y-m-d', $request->get('month') . '-01')->endOfMonth();
+        $startWhite = Carbon::createFromFormat('Y-m-d', $request->get('month'). '-01')->firstOfMonth();
+        $endWhite = Carbon::createFromFormat('Y-m-d', $request->get('month'). '-01')->endOfMonth();
         $i = 0;
         $max = 0;
         $total = 0;
 
-        while ($startWhite->lte($endWhite)) {
+        while ($startWhite->lte($endWhite)){
             $key = $startWhite->copy()->format('Y-m-d');
             $i++;
             $startWhite->addDay();
 
-            if ($i == 1) {
+            if($i == 1){
                 $beforeItem = DB::connection('sqlsrv')->table($tableData)
                     ->where('IDsensor', $sensorM3->IDsensor)
                     ->where('Date', "<", $key)
@@ -548,12 +546,12 @@ class ReportController extends Controller
 
             if (!isset($groupedByDate[$key])) {
 
-                if ($key > Carbon::now()->format('Y-m-d')) {
+                if($key > Carbon::now()->format('Y-m-d')) {
                     break;
                 }
 
                 $data[$i] = [
-                    'date' => (string) $i,
+                    'date' =>(string) $i,
                     'quantity' => 0,
                 ];
                 continue;
@@ -578,7 +576,7 @@ class ReportController extends Controller
 
             $total += $quantity;
             $data[$i] = [
-                'date' => (string) $i,
+                'date' =>(string) $i,
                 'quantity' => $quantity
             ];
 
@@ -594,8 +592,7 @@ class ReportController extends Controller
         ]);
     }
 
-    function roundUpToNearest($number)
-    {
+    function roundUpToNearest($number) {
         if ($number == 0) {
             return 0;
         }
@@ -618,7 +615,7 @@ class ReportController extends Controller
 
     private function getSensor(FactoryModel $factory, array $type)
     {
-        $tableSensor = $factory->IDnhamay . "listsensor";
+        $tableSensor = $factory->IDnhamay. "listsensor";
 
         return DB::connection('sqlsrv')
             ->table($tableSensor)
@@ -631,7 +628,7 @@ class ReportController extends Controller
 
     private function getMeasuringPoint(FactoryModel $factory, array $idMeasuringPoints)
     {
-        $tablePoint = $factory->IDnhamay . "_IDthietbi";
+        $tablePoint = $factory->IDnhamay. "_IDthietbi";
 
         return DB::connection('sqlsrv')
             ->table($tablePoint)
@@ -645,29 +642,18 @@ class ReportController extends Controller
     {
         $tableData = $factory->IDnhamay . "Data";
 
-        // Xác định khoảng thời gian
+        $idSensors = "'" . implode("', '", $idMeasuringPoints) . "'";
+        $type = "'" . implode("', '", $type) . "'";
+
         $start = Carbon::now()->subMinutes(10)->format('Y-m-d H:i:s');
         $end = Carbon::now()->format('Y-m-d H:i:s');
 
-        // Truy vấn bằng Query Builder
-        $query = DB::connection('sqlsrv')
-            ->table($tableData)
-            ->select('IDsensor', 'Unit', 'Value', 'Date')
-            ->whereBetween('Date', [$start, $end])
-            ->whereIn('Unit', $type)
-            ->whereIn('IDsensor', $idMeasuringPoints)
-            ->orderBy('Date', 'desc');
+        $reports = DB::connection('sqlsrv')->select("WITH OrderedData AS (SELECT [IDsensor], [Unit], Value, [Date], ROW_NUMBER() OVER (PARTITION BY [IDsensor], [Unit] ORDER BY [Date] DESC) AS rn
+        FROM [$tableData]
+        WHERE [Date] BETWEEN '$start' AND '$end'
+        AND [Unit] IN ($type)
+        AND [IDsensor] IN ($idSensors)) SELECT [IDsensor], [Unit], Value, [Date] FROM OrderedData WHERE rn = 1 ORDER BY [Date] DESC;");
 
-        // Sử dụng groupBy để lấy bản ghi mới nhất cho mỗi IDsensor
-        $reports = $query
-            ->get()
-            ->groupBy('IDsensor')
-            ->map(function ($items) {
-                return $items->sortByDesc('Date')->first(); // Lấy bản ghi mới nhất cho từng IDsensor
-            });
-
-        // Trả về Collection với key là IDsensor
-        return $reports->keyBy('IDsensor');
+        return collect($reports)->keyBy('IDsensor');
     }
-
 }
