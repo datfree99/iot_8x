@@ -51,17 +51,23 @@ class ReportController extends Controller
                         $carbonDate = Carbon::parse($value->Date)->format('Y-m-d H:i');
                         $data[$key]['date'] = $carbonDate;
                     } catch (\Exception $e) {
-                        // $data[$key]['date'] = "-";
+                        $data[$key]['date'] = "-";
                     }
+                    try {
+                        // Xử lý giá trị đo m3 trong ngày
+                        if ($value->Unit === 'm3') {
+                            $dailyOutput = $this->calculateDailyOutput($factory, $value->IDsensor, $value->Value);
+                            $data[$key]['m3InDay'] = $dailyOutput;
+                        }
+                    } catch (\Exception $e) {
 
-                    // Xử lý giá trị đo m3 trong ngày
-                    if ($value->Unit === 'm3') {
-                        $dailyOutput = $this->calculateDailyOutput($factory, $value->IDsensor, $value->Value);
-                        $data[$key]['m3InDay'] = $dailyOutput;
                     }
+                    try {
+                        // Lưu giá trị theo đơn vị đo
+                        $data[$key][$value->Unit] = max(round($value->Value, 2), 0);
+                    } catch (\Exception $e) {
 
-                    // Lưu giá trị theo đơn vị đo
-                    $data[$key][$value->Unit] = max(round($value->Value, 2), 0);
+                    }
                 }
             } catch (\Exception $e) {
                 //throw $th;
