@@ -653,7 +653,7 @@ class ReportController extends Controller
         $idSensors = "'" . implode("', '", $idMeasuringPoints) . "'";
         $type = "'" . implode("', '", $type) . "'";
 
-        $start = Carbon::now()->subMinutes(10)->format('Y-m-d H:i:s');
+        $start = Carbon::now()->subMinutes(720)->format('Y-m-d H:i:s');
         $end = Carbon::now()->format('Y-m-d H:i:s');
 
         $sql = "
