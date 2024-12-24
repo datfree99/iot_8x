@@ -237,36 +237,31 @@ class ReportController extends Controller
                 continue;
             }
             // xử lý dữ liệu cho bar, m3/h
-            try {
-                $groupTimes = $result->groupBy(function ($item) {
-                    return substr($item->Date, 0, 16);
-                });
+            $groupTimes = $result->groupBy(function ($item) {
+                return substr($item->Date, 0, 16);
+            });
 
-                $i = 0;
+            $i = 0;
 
-                $data[$keyGroup] = $groupTimes->map(function ($item) use (&$mainX, &$i) {
-                    $index = $i++;
-                    $firstItem = $item->first();
-                    $date = Carbon::createFromFormat('Y-m-d H:i:s.u', $firstItem->Date);
+            $data[$keyGroup] = $groupTimes->map(function ($item) use (&$mainX, &$i) {
+                $index = $i++;
+                $firstItem = $item->first();
+                $date = Carbon::createFromFormat('Y-m-d H:i:s.u', $firstItem->Date);
 
-                    $keyMainX = $date->copy()->startOfHour()->format('H:i');
+                $keyMainX = $date->copy()->startOfHour()->format('H:i');
 
-                    if (!isset($mainX[$keyMainX])) {
-                        $mainX[$keyMainX] = [
-                            'key' => $index,
-                            'value' => (int) $date->format('H')
-                        ];
-                    }
-
-                    return [
+                if (!isset($mainX[$keyMainX])) {
+                    $mainX[$keyMainX] = [
                         'key' => $index,
-                        'value' => max(round($item->max('Value'), 2), 0)
+                        'value' => (int) $date->format('H')
                     ];
-                })->values();
-            } catch (\Exception $th) {
-                //throw $th;
-            }
+                }
 
+                return [
+                    'key' => $index,
+                    'value' => max(round($item->max('Value'), 2), 0)
+                ];
+            })->values();
         }
 
         // Giữ nguyên các mảng không có dữ liệu (mặc định là rỗng)
