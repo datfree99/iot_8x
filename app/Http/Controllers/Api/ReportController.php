@@ -39,30 +39,34 @@ class ReportController extends Controller
         $data = [];
         foreach ($sensors as $sensor) {
             $key = $sensor->IDthietbi;
+            try {
+                // Tên điểm đo
+                $data[$key]['name'] = $measuringPoints[$key] ?? '-';
 
-            // Tên điểm đo
-            $data[$key]['name'] = $measuringPoints[$key] ?? '-';
+                // Lấy dữ liệu từ `reports`
+                $value = $reports[$sensor->IDsensor] ?? null;
 
-            // Lấy dữ liệu từ `reports`
-            $value = $reports[$sensor->IDsensor] ?? null;
+                if ($value) {
+                    try {
+                        $carbonDate = Carbon::parse($value->Date)->format('Y-m-d H:i');
+                        $data[$key]['date'] = $carbonDate;
+                    } catch (\Exception $e) {
+                        // $data[$key]['date'] = "-";
+                    }
 
-            if ($value) {
-                try {
-                    $carbonDate = Carbon::parse($value->Date)->format('Y-m-d H:i');
-                    $data[$key]['date'] = $carbonDate;
-                } catch (\Exception $e) {
-                    // $data[$key]['date'] = "-";
+                    // Xử lý giá trị đo m3 trong ngày
+                    if ($value->Unit === 'm3') {
+                        $dailyOutput = $this->calculateDailyOutput($factory, $value->IDsensor, $value->Value);
+                        $data[$key]['m3InDay'] = $dailyOutput;
+                    }
+
+                    // Lưu giá trị theo đơn vị đo
+                    $data[$key][$value->Unit] = max(round($value->Value, 2), 0);
                 }
-
-                // Xử lý giá trị đo m3 trong ngày
-                if ($value->Unit === 'm3') {
-                    $dailyOutput = $this->calculateDailyOutput($factory, $value->IDsensor, $value->Value);
-                    $data[$key]['m3InDay'] = $dailyOutput;
-                }
-
-                // Lưu giá trị theo đơn vị đo
-                $data[$key][$value->Unit] = max(round($value->Value, 2), 0);
+            } catch (\Exception $e) {
+                //throw $th;
             }
+
         }
 
         // Tạo báo cáo
