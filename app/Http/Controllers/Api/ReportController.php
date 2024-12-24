@@ -51,7 +51,7 @@ class ReportController extends Controller
                     $carbonDate = Carbon::parse($value->Date)->format('Y-m-d H:i');
                     $data[$key]['date'] = $carbonDate;
                 } catch (\Exception $e) {
-                    $data[$key]['date'] = "-";
+                    // $data[$key]['date'] = "-";
                 }
 
                 // Xử lý giá trị đo m3 trong ngày
