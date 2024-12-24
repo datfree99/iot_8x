@@ -163,7 +163,6 @@ class ReportController extends Controller
             ->orderBy('IDthietbi')
             ->get();
 
-
         $sensors = $sensors->pluck('TypeOfSensor', 'IDsensor')->toArray();
         $idSensors = array_keys($sensors);
 
@@ -177,24 +176,9 @@ class ReportController extends Controller
         $results = $results->groupBy('IDsensor');
 
         $data = [
-            'm3/h' => [
-                [
-                    "key" => 0,
-                    "value" => 0
-                ]
-            ],
-            'm3' => [
-                [
-                    "key" => 0,
-                    "value" => 0
-                ]
-            ],
-            'bar' => [
-                [
-                    "key" => 0,
-                    "value" => 0
-                ]
-            ],
+            'm3/h' => [],
+            'm3' => [],
+            'bar' => [],
         ];
 
         $sensorId = null;
@@ -206,11 +190,10 @@ class ReportController extends Controller
             }
         }
 
-
         $total_m3 = 0;
         $mainX = [];
-        foreach ($results as $key => $result) {
 
+        foreach ($results as $key => $result) {
             if (!isset($sensors[$key])) {
                 continue;
             }
@@ -218,15 +201,14 @@ class ReportController extends Controller
             $keyGroup = $sensors[$key];
 
             if ($keyGroup == 'm3') {
-
                 $groupTimes = $result->groupBy(function ($item) {
                     return substr($item->Date, 0, 13);
                 });
 
                 $i = 1;
                 $minValue = 0;
-                $data[$keyGroup] = $groupTimes->map(function ($items) use (&$total_m3, &$i, &$minValue, $tableData, $sensorId, $date) {
 
+                $data[$keyGroup] = $groupTimes->map(function ($items) use (&$total_m3, &$i, &$minValue, $tableData, $sensorId, $date) {
                     if ($i == 1) {
                         $minValue = DB::connection('sqlsrv')->table($tableData)
                             ->where('IDsensor', $sensorId)
@@ -257,6 +239,7 @@ class ReportController extends Controller
             $groupTimes = $result->groupBy(function ($item) {
                 return substr($item->Date, 0, 16);
             });
+
             $i = 0;
 
             $data[$keyGroup] = $groupTimes->map(function ($item) use (&$mainX, &$i) {
@@ -278,9 +261,9 @@ class ReportController extends Controller
                     'value' => max(round($item->max('Value'), 2), 0)
                 ];
             })->values();
-            ;
         }
 
+        // Kiểm tra nếu không có dữ liệu, giữ nguyên mảng mặc định (rỗng)
         $data['main_x'] = array_values($mainX);
         $data['total_m3'] = round($total_m3, 2) + 0.11;
 

@@ -16,7 +16,7 @@ use App\Http\Controllers\Api\ReportController;
 |
 */
 
-Route::post('app/login', [AuthController::class, 'login']);
+Route::post('app/login', [AuthController::class, 'login']); // đăng nhập
 
 Route::group(['middleware' => 'auth:sanctum', 'prefix' => 'app'], function (){
     Route::get('/check-login', [AuthController::class, 'checkLogin']);
