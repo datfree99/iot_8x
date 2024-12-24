@@ -68,8 +68,6 @@ class ReportController extends Controller
                     } catch (\Exception $e) {
 
                     }
-                } else {
-                    $data[$key]['m3InDay'] = 100;
                 }
             } catch (\Exception $e) {
                 //throw $th;
