@@ -195,73 +195,75 @@ class ReportController extends Controller
         $mainX = [];
 
         foreach ($results as $key => $result) {
-            if (!isset($sensors[$key])) {
-                continue;
-            }
+            // if (!isset($sensors[$key])) {
+            //     continue;
+            // }
+            if (isset($sensors[$key])) {
+                $keyGroup = $sensors[$key];
 
-            $keyGroup = $sensors[$key];
+                if ($keyGroup == 'm3') {
+                    $groupTimes = $result->groupBy(function ($item) {
+                        return substr($item->Date, 0, 13);
+                    });
 
-            if ($keyGroup == 'm3') {
-                $groupTimes = $result->groupBy(function ($item) {
-                    return substr($item->Date, 0, 13);
-                });
+                    $i = 1;
+                    $minValue = 0;
 
-                $i = 1;
-                $minValue = 0;
+                    $data[$keyGroup] = $groupTimes->map(function ($items) use (&$total_m3, &$i, &$minValue, $tableData, $sensorId, $date) {
+                        if ($i == 1) {
+                            $minValue = DB::connection('sqlsrv')->table($tableData)
+                                ->where('IDsensor', $sensorId)
+                                ->where('Date', "<", $date->format("Y-m-d"))
+                                ->orderByDesc('STT')
+                                ->pluck('Value')
+                                ->first();
+                        }
 
-                $data[$keyGroup] = $groupTimes->map(function ($items) use (&$total_m3, &$i, &$minValue, $tableData, $sensorId, $date) {
-                    if ($i == 1) {
-                        $minValue = DB::connection('sqlsrv')->table($tableData)
-                            ->where('IDsensor', $sensorId)
-                            ->where('Date', "<", $date->format("Y-m-d"))
-                            ->orderByDesc('STT')
-                            ->pluck('Value')
-                            ->first();
-                    }
+                        $maxDateItem = $items->max('Date');
+                        $maxValue = $items->where('Date', $maxDateItem)->pluck('Value')->first();
+                        $quantity = max(round($maxValue - $minValue, 2), 0);
+                        $minValue = $maxValue;
+                        $first = $items->first();
+                        $date = Carbon::createFromFormat('Y-m-d H:i:s.u', $first->Date);
 
-                    $maxDateItem = $items->max('Date');
-                    $maxValue = $items->where('Date', $maxDateItem)->pluck('Value')->first();
-                    $quantity = max(round($maxValue - $minValue, 2), 0);
-                    $minValue = $maxValue;
-                    $first = $items->first();
-                    $date = Carbon::createFromFormat('Y-m-d H:i:s.u', $first->Date);
+                        $total_m3 += $quantity;
+                        $i++;
+                        return [
+                            'key' => (int) $date->format('H'),
+                            'value' => round($quantity, 2)
+                        ];
+                    })->values();
 
-                    $total_m3 += $quantity;
-                    $i++;
-                    return [
-                        'key' => (int) $date->format('H'),
-                        'value' => round($quantity, 2)
-                    ];
-                })->values();
-
-                continue;
-            }
-
-            $groupTimes = $result->groupBy(function ($item) {
-                return substr($item->Date, 0, 16);
-            });
-
-            $i = 0;
-
-            $data[$keyGroup] = $groupTimes->map(function ($item) use (&$mainX, &$i) {
-                $index = $i++;
-                $firstItem = $item->first();
-                $date = Carbon::createFromFormat('Y-m-d H:i:s.u', $firstItem->Date);
-
-                $keyMainX = $date->copy()->startOfHour()->format('H:i');
-
-                if (!isset($mainX[$keyMainX])) {
-                    $mainX[$keyMainX] = [
-                        'key' => $index,
-                        'value' => (int) $date->format('H')
-                    ];
+                    continue;
                 }
 
-                return [
-                    'key' => $index,
-                    'value' => max(round($item->max('Value'), 2), 0)
-                ];
-            })->values();
+                $groupTimes = $result->groupBy(function ($item) {
+                    return substr($item->Date, 0, 16);
+                });
+
+                $i = 0;
+
+                $data[$keyGroup] = $groupTimes->map(function ($item) use (&$mainX, &$i) {
+                    $index = $i++;
+                    $firstItem = $item->first();
+                    $date = Carbon::createFromFormat('Y-m-d H:i:s.u', $firstItem->Date);
+
+                    $keyMainX = $date->copy()->startOfHour()->format('H:i');
+
+                    if (!isset($mainX[$keyMainX])) {
+                        $mainX[$keyMainX] = [
+                            'key' => $index,
+                            'value' => (int) $date->format('H')
+                        ];
+                    }
+
+                    return [
+                        'key' => $index,
+                        'value' => max(round($item->max('Value'), 2), 0)
+                    ];
+                })->values();
+            }
+
         }
 
         // Giữ nguyên các mảng không có dữ liệu (mặc định là rỗng)
