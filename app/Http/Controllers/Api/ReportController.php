@@ -195,48 +195,49 @@ class ReportController extends Controller
         $mainX = [];
 
         foreach ($results as $key => $result) {
-            // if (!isset($sensors[$key])) {
-            //     continue;
-            // }
-            if (isset($sensors[$key])) {
-                $keyGroup = $sensors[$key];
+            if (!isset($sensors[$key])) {
+                continue;
+            }
 
-                if ($keyGroup == 'm3') {
-                    $groupTimes = $result->groupBy(function ($item) {
-                        return substr($item->Date, 0, 13);
-                    });
+            $keyGroup = $sensors[$key];
 
-                    $i = 1;
-                    $minValue = 0;
+            if ($keyGroup == 'm3') {
+                $groupTimes = $result->groupBy(function ($item) {
+                    return substr($item->Date, 0, 13);
+                });
 
-                    $data[$keyGroup] = $groupTimes->map(function ($items) use (&$total_m3, &$i, &$minValue, $tableData, $sensorId, $date) {
-                        if ($i == 1) {
-                            $minValue = DB::connection('sqlsrv')->table($tableData)
-                                ->where('IDsensor', $sensorId)
-                                ->where('Date', "<", $date->format("Y-m-d"))
-                                ->orderByDesc('STT')
-                                ->pluck('Value')
-                                ->first();
-                        }
+                $i = 1;
+                $minValue = 0;
 
-                        $maxDateItem = $items->max('Date');
-                        $maxValue = $items->where('Date', $maxDateItem)->pluck('Value')->first();
-                        $quantity = max(round($maxValue - $minValue, 2), 0);
-                        $minValue = $maxValue;
-                        $first = $items->first();
-                        $date = Carbon::createFromFormat('Y-m-d H:i:s.u', $first->Date);
+                $data[$keyGroup] = $groupTimes->map(function ($items) use (&$total_m3, &$i, &$minValue, $tableData, $sensorId, $date) {
+                    if ($i == 1) {
+                        $minValue = DB::connection('sqlsrv')->table($tableData)
+                            ->where('IDsensor', $sensorId)
+                            ->where('Date', "<", $date->format("Y-m-d"))
+                            ->orderByDesc('STT')
+                            ->pluck('Value')
+                            ->first();
+                    }
 
-                        $total_m3 += $quantity;
-                        $i++;
-                        return [
-                            'key' => (int) $date->format('H'),
-                            'value' => round($quantity, 2)
-                        ];
-                    })->values();
+                    $maxDateItem = $items->max('Date');
+                    $maxValue = $items->where('Date', $maxDateItem)->pluck('Value')->first();
+                    $quantity = max(round($maxValue - $minValue, 2), 0);
+                    $minValue = $maxValue;
+                    $first = $items->first();
+                    $date = Carbon::createFromFormat('Y-m-d H:i:s.u', $first->Date);
 
-                    continue;
-                }
+                    $total_m3 += $quantity;
+                    $i++;
+                    return [
+                        'key' => (int) $date->format('H'),
+                        'value' => round($quantity, 2)
+                    ];
+                })->values();
 
+                continue;
+            }
+            // xử lý dữ liệu cho bar, m3/h
+            try {
                 $groupTimes = $result->groupBy(function ($item) {
                     return substr($item->Date, 0, 16);
                 });
@@ -262,6 +263,8 @@ class ReportController extends Controller
                         'value' => max(round($item->max('Value'), 2), 0)
                     ];
                 })->values();
+            } catch (\Exception $th) {
+                //throw $th;
             }
 
         }
