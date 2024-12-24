@@ -68,8 +68,7 @@ class ReportController extends Controller
                     } catch (\Exception $e) {
 
                     }
-                }
-                else{
+                } else {
                     $data[$key]['m3InDay'] = 100;
                 }
             } catch (\Exception $e) {
@@ -652,7 +651,7 @@ class ReportController extends Controller
     private function getData(FactoryModel $factory, array $idMeasuringPoints, array $type)
     {
         $tableData = $factory->IDnhamay . "Data";
-
+        $tablelistSensor = $factory->IDnhamay . "listsensor";
         $idSensors = "'" . implode("', '", $idMeasuringPoints) . "'";
         $type = "'" . implode("', '", $type) . "'";
 
@@ -662,15 +661,16 @@ class ReportController extends Controller
         $sql = "
         WITH OrderedData AS (
             SELECT
-                [IDsensor],
-                [Unit],
+                a.[IDsensor],
+                b.TypeOfSensor as'Unit',
                 Value,
                 [Date],
                 ROW_NUMBER() OVER (PARTITION BY [IDsensor], [Unit] ORDER BY [Date] DESC) AS rn
-            FROM [$tableData]
+            FROM [$tableData] as a,[$tablelistSensor] as b
             WHERE [Date] BETWEEN ? AND ?
-              AND [Unit] IN ($type)
-              AND [IDsensor] IN ($idSensors)
+              AND b.[TypeOfSensor] IN ($type)
+              AND a.[IDsensor] IN ($idSensors)
+              AND a.[IDsensor]=b.[IDsensor]
         )
         SELECT [IDsensor], [Unit], Value, [Date]
         FROM OrderedData
