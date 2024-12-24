@@ -51,7 +51,7 @@ class ReportController extends Controller
                         $carbonDate = Carbon::parse($value->Date)->format('Y-m-d H:i');
                         $data[$key]['date'] = $carbonDate;
                     } catch (\Exception $e) {
-                        $data[$key]['date'] = "-";
+                        // $data[$key]['date'] = "-";
                     }
                     try {
                         // Xử lý giá trị đo m3 trong ngày
@@ -68,6 +68,9 @@ class ReportController extends Controller
                     } catch (\Exception $e) {
 
                     }
+                }
+                else{
+                    $data[$key]['m3InDay'] = 100;
                 }
             } catch (\Exception $e) {
                 //throw $th;
