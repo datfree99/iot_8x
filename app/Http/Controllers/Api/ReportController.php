@@ -175,6 +175,7 @@ class ReportController extends Controller
 
         $results = $results->groupBy('IDsensor');
 
+        // Dữ liệu mặc định cho tất cả các loại cảm biến
         $data = [
             'm3/h' => [],
             'm3' => [],
@@ -263,7 +264,7 @@ class ReportController extends Controller
             })->values();
         }
 
-        // Kiểm tra nếu không có dữ liệu, giữ nguyên mảng mặc định (rỗng)
+        // Giữ nguyên các mảng không có dữ liệu (mặc định là rỗng)
         $data['main_x'] = array_values($mainX);
         $data['total_m3'] = round($total_m3, 2) + 0.11;
 
