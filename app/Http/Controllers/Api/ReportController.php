@@ -665,9 +665,9 @@ class ReportController extends Controller
                 b.TypeOfSensor as'Unit',
                 Value,
                 [Date],
-                ROW_NUMBER() OVER (PARTITION BY [IDsensor], [Unit] ORDER BY [Date] DESC) AS rn
+                ROW_NUMBER() OVER (PARTITION BY a.[IDsensor], [Unit] ORDER BY [Date] DESC) AS rn
             FROM [$tableData] as a,[$tablelistSensor] as b
-            WHERE [Date] BETWEEN ? AND ?
+            WHERE a.[Date] BETWEEN ? AND ?
               AND b.[TypeOfSensor] IN ($type)
               AND a.[IDsensor] IN ($idSensors)
               AND a.[IDsensor]=b.[IDsensor]
