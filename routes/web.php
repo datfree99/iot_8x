@@ -22,7 +22,9 @@ Route::get('san-pham', [HomeController::class, 'product'])->name('product');
 Route::get('dich-vu', [HomeController::class, 'service'])->name('service');
 Route::get('giai-phap', [HomeController::class, 'solution'])->name('solution');
 Route::get('du-an', [HomeController::class, 'project'])->name('project');
-Route::get('khach-hang', [HomeController::class, 'customers'])->name('customers');
+Route::get('khach-hang', function () {
+    return redirect('http://demo.iotsmart.vn/'); // Thay 'https://example.com' bằng URL bạn muốn
+})->name('customers');
 Route::get('lien-he', [HomeController::class, 'contact'])->name('contact');
 Route::get('privacy', [HomeController::class, 'privacy'])->name('privacy');
 
