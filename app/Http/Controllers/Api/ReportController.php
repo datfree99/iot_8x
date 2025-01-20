@@ -156,7 +156,6 @@ class ReportController extends Controller
 
         $tableSensor = $factory->IDnhamay . "listsensor";
 
-        // Lấy danh sách cảm biến
         $sensors = DB::connection('sqlsrv')
             ->table($tableSensor)
             ->whereIn('TypeOfSensor', $type)
@@ -167,7 +166,6 @@ class ReportController extends Controller
         $sensors = $sensors->pluck('TypeOfSensor', 'IDsensor')->toArray();
         $idSensors = array_keys($sensors);
 
-        // Lấy dữ liệu từ bảng Data
         $results = DB::connection('sqlsrv')->table($tableData)
             ->whereIn('IDsensor', $idSensors)
             ->whereIn('Unit', $type)
@@ -175,10 +173,9 @@ class ReportController extends Controller
             ->orderBy('Date')
             ->get();
 
-        // Nhóm dữ liệu theo ID cảm biến
         $results = $results->groupBy('IDsensor');
 
-        // Khởi tạo dữ liệu mặc định
+        // Dữ liệu mặc định cho tất cả các loại cảm biến
         $data = [
             'm3/h' => [],
             'm3' => [],
@@ -187,7 +184,6 @@ class ReportController extends Controller
 
         $sensorId = null;
 
-        // Tìm cảm biến `m3`
         foreach ($sensors as $key => $sensor) {
             if ($sensor == 'm3') {
                 $sensorId = $key;
@@ -198,16 +194,14 @@ class ReportController extends Controller
         $total_m3 = 0;
         $mainX = [];
 
-        // Lặp qua tất cả cảm biến
-        foreach ($sensors as $key => $sensorType) {
-            if (!isset($results[$key])) {
-                // Nếu không có dữ liệu cho cảm biến này, bỏ qua xử lý nhưng vẫn trả về mảng trống
+        foreach ($results as $key => $result) {
+            if (!isset($sensors[$key])) {
                 continue;
             }
 
-            $result = $results[$key];
+            $keyGroup = $sensors[$key];
 
-            if ($sensorType == 'm3') {
+            if ($keyGroup == 'm3') {
                 $groupTimes = $result->groupBy(function ($item) {
                     return substr($item->Date, 0, 13);
                 });
@@ -215,7 +209,7 @@ class ReportController extends Controller
                 $i = 1;
                 $minValue = 0;
 
-                $data['m3'] = $groupTimes->map(function ($items) use (&$total_m3, &$i, &$minValue, $tableData, $sensorId, $date) {
+                $data[$keyGroup] = $groupTimes->map(function ($items) use (&$total_m3, &$i, &$minValue, $tableData, $sensorId, $date) {
                     if ($i == 1) {
                         $minValue = DB::connection('sqlsrv')->table($tableData)
                             ->where('IDsensor', $sensorId)
@@ -239,37 +233,38 @@ class ReportController extends Controller
                         'value' => round($quantity, 2)
                     ];
                 })->values();
-            } else {
-                // Xử lý dữ liệu cho `m3/h` và `bar`
-                $groupTimes = $result->groupBy(function ($item) {
-                    return substr($item->Date, 0, 16);
-                });
 
-                $i = 0;
-
-                $data[$sensorType] = $groupTimes->map(function ($item) use (&$mainX, &$i) {
-                    $index = $i++;
-                    $firstItem = $item->first();
-                    $date = Carbon::createFromFormat('Y-m-d H:i:s.u', $firstItem->Date);
-
-                    $keyMainX = $date->copy()->startOfHour()->format('H:i');
-
-                    if (!isset($mainX[$keyMainX])) {
-                        $mainX[$keyMainX] = [
-                            'key' => $index,
-                            'value' => (int) $date->format('H')
-                        ];
-                    }
-
-                    return [
-                        'key' => $index,
-                        'value' => max(round($item->max('Value'), 2), 0)
-                    ];
-                })->values();
+                continue;
             }
+            // xử lý dữ liệu cho bar, m3/h
+            $groupTimes = $result->groupBy(function ($item) {
+                return substr($item->Date, 0, 16);
+            });
+
+            $i = 0;
+
+            $data[$keyGroup] = $groupTimes->map(function ($item) use (&$mainX, &$i) {
+                $index = $i++;
+                $firstItem = $item->first();
+                $date = Carbon::createFromFormat('Y-m-d H:i:s.u', $firstItem->Date);
+
+                $keyMainX = $date->copy()->startOfHour()->format('H:i');
+
+                if (!isset($mainX[$keyMainX])) {
+                    $mainX[$keyMainX] = [
+                        'key' => $index,
+                        'value' => (int) $date->format('H')
+                    ];
+                }
+
+                return [
+                    'key' => $index,
+                    'value' => max(round($item->max('Value'), 2), 0)
+                ];
+            })->values();
         }
 
-        // Thêm dữ liệu tổng hợp
+        // Giữ nguyên các mảng không có dữ liệu (mặc định là rỗng)
         $data['main_x'] = array_values($mainX);
         $data['total_m3'] = round($total_m3, 2) + 0.11;
 
@@ -278,7 +273,6 @@ class ReportController extends Controller
             'data' => $data
         ]);
     }
-
 
     public function quantityMonitoringDetail(Request $request)
     {
