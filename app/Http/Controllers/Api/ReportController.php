@@ -194,12 +194,9 @@ class ReportController extends Controller
         $total_m3 = 0;
         $mainX = [];
 
-        foreach ($results as $key => $result) {
-            if (!isset($sensors[$key])) {
-                continue;
-            }
-
-            $keyGroup = $sensors[$key];
+        foreach ($sensors as $key => $keyGroup) {
+            // Kiểm tra nếu cảm biến không có dữ liệu
+            $result = $results->get($key, collect());
 
             if ($keyGroup == 'm3') {
                 $groupTimes = $result->groupBy(function ($item) {
@@ -233,35 +230,34 @@ class ReportController extends Controller
                         'value' => round($quantity, 2)
                     ];
                 })->values();
+            } else {
+                // Xử lý dữ liệu cho bar và m3/h
+                $groupTimes = $result->groupBy(function ($item) {
+                    return substr($item->Date, 0, 16);
+                });
 
-                continue;
-            }
-            // xử lý dữ liệu cho bar, m3/h
-            $groupTimes = $result->groupBy(function ($item) {
-                return substr($item->Date, 0, 16);
-            });
+                $i = 0;
 
-            $i = 0;
+                $data[$keyGroup] = $groupTimes->map(function ($item) use (&$mainX, &$i) {
+                    $index = $i++;
+                    $firstItem = $item->first();
+                    $date = Carbon::createFromFormat('Y-m-d H:i:s.u', $firstItem->Date);
 
-            $data[$keyGroup] = $groupTimes->map(function ($item) use (&$mainX, &$i) {
-                $index = $i++;
-                $firstItem = $item->first();
-                $date = Carbon::createFromFormat('Y-m-d H:i:s.u', $firstItem->Date);
+                    $keyMainX = $date->copy()->startOfHour()->format('H:i');
 
-                $keyMainX = $date->copy()->startOfHour()->format('H:i');
+                    if (!isset($mainX[$keyMainX])) {
+                        $mainX[$keyMainX] = [
+                            'key' => $index,
+                            'value' => (int) $date->format('H')
+                        ];
+                    }
 
-                if (!isset($mainX[$keyMainX])) {
-                    $mainX[$keyMainX] = [
+                    return [
                         'key' => $index,
-                        'value' => (int) $date->format('H')
+                        'value' => max(round($item->max('Value'), 2), 0)
                     ];
-                }
-
-                return [
-                    'key' => $index,
-                    'value' => max(round($item->max('Value'), 2), 0)
-                ];
-            })->values();
+                })->values();
+            }
         }
 
         // Giữ nguyên các mảng không có dữ liệu (mặc định là rỗng)
@@ -273,6 +269,7 @@ class ReportController extends Controller
             'data' => $data
         ]);
     }
+
 
     public function quantityMonitoringDetail(Request $request)
     {
