@@ -168,7 +168,7 @@ class ReportController extends Controller
 
         $results = DB::connection('sqlsrv')->table($tableData)
             ->whereIn('IDsensor', $idSensors)
-            ->whereIn('Unit', $type)
+            // ->whereIn('Unit', $type)
             ->whereBetween('Date', [$start, $end])
             ->orderBy('Date')
             ->get();
@@ -194,9 +194,12 @@ class ReportController extends Controller
         $total_m3 = 0;
         $mainX = [];
 
-        foreach ($sensors as $key => $keyGroup) {
-            // Kiểm tra nếu cảm biến không có dữ liệu
-            $result = $results->get($key, collect());
+        foreach ($results as $key => $result) {
+            if (!isset($sensors[$key])) {
+                continue;
+            }
+
+            $keyGroup = $sensors[$key];
 
             if ($keyGroup == 'm3') {
                 $groupTimes = $result->groupBy(function ($item) {
@@ -230,34 +233,35 @@ class ReportController extends Controller
                         'value' => round($quantity, 2)
                     ];
                 })->values();
-            } else {
-                // Xử lý dữ liệu cho bar và m3/h
-                $groupTimes = $result->groupBy(function ($item) {
-                    return substr($item->Date, 0, 16);
-                });
 
-                $i = 0;
-
-                $data[$keyGroup] = $groupTimes->map(function ($item) use (&$mainX, &$i) {
-                    $index = $i++;
-                    $firstItem = $item->first();
-                    $date = Carbon::createFromFormat('Y-m-d H:i:s.u', $firstItem->Date);
-
-                    $keyMainX = $date->copy()->startOfHour()->format('H:i');
-
-                    if (!isset($mainX[$keyMainX])) {
-                        $mainX[$keyMainX] = [
-                            'key' => $index,
-                            'value' => (int) $date->format('H')
-                        ];
-                    }
-
-                    return [
-                        'key' => $index,
-                        'value' => max(round($item->max('Value'), 2), 0)
-                    ];
-                })->values();
+                continue;
             }
+            // xử lý dữ liệu cho bar, m3/h
+            $groupTimes = $result->groupBy(function ($item) {
+                return substr($item->Date, 0, 16);
+            });
+
+            $i = 0;
+
+            $data[$keyGroup] = $groupTimes->map(function ($item) use (&$mainX, &$i) {
+                $index = $i++;
+                $firstItem = $item->first();
+                $date = Carbon::createFromFormat('Y-m-d H:i:s.u', $firstItem->Date);
+
+                $keyMainX = $date->copy()->startOfHour()->format('H:i');
+
+                if (!isset($mainX[$keyMainX])) {
+                    $mainX[$keyMainX] = [
+                        'key' => $index,
+                        'value' => (int) $date->format('H')
+                    ];
+                }
+
+                return [
+                    'key' => $index,
+                    'value' => max(round($item->max('Value'), 2), 0)
+                ];
+            })->values();
         }
 
         // Giữ nguyên các mảng không có dữ liệu (mặc định là rỗng)
