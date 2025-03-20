@@ -602,13 +602,15 @@ class ReportController extends Controller
     private function getSensor(FactoryModel $factory, array $type)
     {
         $tableSensor = $factory->IDnhamay . "listsensor";
+        $tableIDSensor = $factory->IDnhamay . "_IDthietbi";
 
         return DB::connection('sqlsrv')
             ->table($tableSensor)
-            ->whereIn('TypeOfSensor', $type)
-            ->whereNotNull('IDthietbi')
-            ->where('IDthietbi', '<>', 0)
-            ->orderBy('IDthietbi')
+            ->join($tableIDSensor, "$tableSensor.IDthietbi", '=', "$tableIDSensor.IDthietbi")
+            ->whereIn("$tableSensor.TypeOfSensor", $type)
+            ->whereNotNull("$tableSensor.IDthietbi")
+            ->where("$tableSensor.IDthietbi", '<>', 0)
+            ->orderBy("$tableIDSensor.DisplayOrder")
             ->get();
     }
 
