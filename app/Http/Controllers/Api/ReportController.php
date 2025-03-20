@@ -606,7 +606,7 @@ class ReportController extends Controller
 
         return DB::connection('sqlsrv')
             ->table($tableSensor)
-            ->join($tableIDSensor, "$tableSensor.IDthietbi", '=', "$tableIDSensor.IDthietbi")
+            ->join($tableIDSensor, "$tableSensor.IDthietbi", '=', "$tableIDSensor.ID")
             ->whereIn("$tableSensor.TypeOfSensor", $type)
             ->whereNotNull("$tableSensor.IDthietbi")
             ->where("$tableSensor.IDthietbi", '<>', 0)
