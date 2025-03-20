@@ -608,7 +608,7 @@ class ReportController extends Controller
             ->whereIn('TypeOfSensor', $type)
             ->whereNotNull('IDthietbi')
             ->where('IDthietbi', '<>', 0)
-            ->orderBy('DisplayOrder')
+            ->orderBy('IDthietbi')
             ->get();
     }
 
