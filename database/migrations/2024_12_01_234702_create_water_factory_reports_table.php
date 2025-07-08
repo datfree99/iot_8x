@@ -13,7 +13,7 @@ class CreateWaterFactoryReportsTable extends Migration
      */
     public function up()
     {
-        Schema::create('factories', function (Blueprint $table) {
+        Schema::connection("sqlsrv_water")->create('factories', function (Blueprint $table) {
             $table->id();
             $table->string("uni_key");
             $table->string("name");
@@ -23,7 +23,7 @@ class CreateWaterFactoryReportsTable extends Migration
             $table->index('uni_key');
         });
 
-        Schema::create('measuring_points', function (Blueprint $table) {
+        Schema::connection("sqlsrv_water")->create('measuring_points', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger("factory_id");
             $table->string("name");
@@ -32,7 +32,7 @@ class CreateWaterFactoryReportsTable extends Migration
             $table->index('factory_id');
         });
 
-        Schema::create('sensors', function (Blueprint $table) {
+        Schema::connection("sqlsrv_water")->create('sensors', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger("factory_id");
             $table->unsignedBigInteger("measuring_point_id");
@@ -43,6 +43,17 @@ class CreateWaterFactoryReportsTable extends Migration
             $table->index('factory_id');
             $table->index('measuring_point_id');
         });
+
+        Schema::connection("sqlsrv_water")->create('anbinh_reports', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger("sensor_id");
+            $table->date("date");
+            $table->float("value");
+            $table->dateTime("created_at");
+
+            $table->index('sensor_id');
+            $table->index('date');
+        });
     }
 
     /**
@@ -52,8 +63,9 @@ class CreateWaterFactoryReportsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('factories');
-        Schema::dropIfExists('measuring_points');
-        Schema::dropIfExists('sensors');
+        Schema::connection("sqlsrv_water")->dropIfExists('factories');
+        Schema::connection("sqlsrv_water")->dropIfExists('measuring_points');
+        Schema::connection("sqlsrv_water")->dropIfExists('sensors');
+        Schema::connection("sqlsrv_water")->dropIfExists('anbinh_reports');
     }
 }

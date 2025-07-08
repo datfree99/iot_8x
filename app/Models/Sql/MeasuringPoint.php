@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class MeasuringPoint extends Model
 {
-    protected $connection = 'mysql';
+    protected $connection = 'sqlsrv_water';
     protected $table = 'measuring_points';
     protected $guarded = ['id'];
 

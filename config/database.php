@@ -91,6 +91,18 @@ return [
             'prefix_indexes' => true,
         ],
 
+        'sqlsrv_water' => [
+            'driver' => 'sqlsrv',
+            'url' => env('DATABASE_URL'),
+            'host' => env('DB_WATER_HOST_SQL', 'localhost'),
+            'port' => env('DB_WATER_PORT_SQL', '1433'),
+            'database' => env('DB_WATER_DATABASE_SQL', 'forge'),
+            'username' => env('DB_WATER_USERNAME_SQL', 'forge'),
+            'password' => env('DB_WATER_PASSWORD_SQL', ''),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+        ],
     ],
 
     /*

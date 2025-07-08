@@ -25,7 +25,7 @@ use Illuminate\Database\Eloquent\Model;
 class SensorModel extends Model
 {
     static $changeTable = "";
-    protected $connection = 'sqlsrv';
+    protected $connection = 'sqlsrv_water';
     protected $table = 'nhamay1listsensor';
 
 }

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Factories extends Model
 {
-    protected $connection = 'mysql';
+    protected $connection = 'sqlsrv_water';
 
     protected $table = 'factories';
 
