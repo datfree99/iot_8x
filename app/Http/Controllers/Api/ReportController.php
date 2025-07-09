@@ -287,8 +287,10 @@ class ReportController extends Controller
     public function quantityMonitoringDetail(Request $request)
     {
         $validate = \Validator::make($request->input(),[
+            'measuring_point' => 'required',
             'date' => 'required|date_format:Y-m-d'
         ], [
+            'measuring_point.required' => 'Vui lòng chọn điểm đo',
             'date.required' => 'Vui lòng chọn ngày',
             'date.date_format' => 'Sai định dạng'
         ]);
@@ -306,9 +308,15 @@ class ReportController extends Controller
         $date = Carbon::createFromFormat('Y-m-d', $request->get('date'));
         $start = $date->format('Y-m-d 00:00:00');
         $end = $date->format('Y-m-d 23:59:59');
+        $tableSensor = $factory->IDnhamay. "listsensor";
 
         $type = ['mg/l', 'NTU', 'PH'];
-        $sensors = $this->getSensor($factory, $type);
+        $sensors = DB::connection('sqlsrv')
+            ->table($tableSensor)
+            ->whereIn('TypeOfSensor', $type)
+            ->where('IDthietbi', $request->get('measuring_point'))
+            ->orderBy('IDthietbi')
+            ->get();
 
         $idSensors = $sensors->pluck('IDsensor', 'TypeOfSensor')->toArray();
 
@@ -402,9 +410,9 @@ class ReportController extends Controller
             }
             $key = $idDevices[$report->IDsensor];
 
-
+            $unit = str_replace("/", '', strtolower($report->Unit));
             if (isset($data[$key])) {
-                $data[$key][$report->Unit] = (string)  max(round($report->Value, 2), 0);
+                $data[$key][$unit] = (string)  max(round($report->Value, 2), 0);
             }else {
                 $date = "-";
                 $status = 'inactive';
@@ -422,9 +430,9 @@ class ReportController extends Controller
                 }
 
                 $data[$key] = [
-                    'id' => $key,
+                    'id' => (int) $key,
                     'quality_criteria' => $measuringPoints[$key] ?? "-",
-                    $report->Unit => (string)  max(round($report->Value, 2), 0),
+                    $unit => (string)  max(round($report->Value, 2), 0),
                     'status' => $status,
                     'update_time' => $date
                 ];
