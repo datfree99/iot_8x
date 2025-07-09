@@ -328,13 +328,13 @@ class ReportController extends Controller
                     "value" => 0
                 ]
             ],
-            'NTU' => [
+            'ntu' => [
                 [
                     "key" => 0,
                     "value" => 0
                 ]
             ],
-            'PH' => [
+            'ph' => [
                 [
                     "key" => 0,
                     "value" => 0
@@ -389,37 +389,46 @@ class ReportController extends Controller
         $sensors = $this->getSensor($factory, $type);
 
         $idSensors = $sensors->pluck('Location', 'IDsensor')->toArray();
+        $idPoints = $sensors->pluck('IDthietbi')->toArray();
+        $idDevices = $sensors->pluck('IDthietbi','IDsensor')->toArray();
+        $measuringPoints = $this->getMeasuringPoint($factory, array_unique($idPoints));
         $keySensor = array_keys($idSensors);
 
         $reports = $this->getData($factory, $keySensor, $type);
-
         $data = [];
         foreach ($reports as $report) {
-            $key = $report->IDsensor . $report->Unit;
+            if (!isset($idDevices[$report->IDsensor])){
+                continue;
+            }
+            $key = $idDevices[$report->IDsensor];
 
-            $date = "-";
-            $status = 'inactive';
-            try {
-                $carbonDate = Carbon::createFromFormat('Y-m-d H:i:s.u', $report->Date);
-                $currentDate = Carbon::now();
-                $fiveMinutesBefore = $currentDate->copy()->subMinutes(5);
-                if ($carbonDate->lessThan($currentDate) && $carbonDate->greaterThanOrEqualTo($fiveMinutesBefore)) {
-                    $status = 'active';
+
+            if (isset($data[$key])) {
+                $data[$key][$report->Unit] = (string)  max(round($report->Value, 2), 0);
+            }else {
+                $date = "-";
+                $status = 'inactive';
+                try {
+                    $carbonDate = Carbon::createFromFormat('Y-m-d H:i:s.u', $report->Date);
+                    $currentDate = Carbon::now();
+                    $fiveMinutesBefore = $currentDate->copy()->subMinutes(5);
+                    if ($carbonDate->lessThan($currentDate) && $carbonDate->greaterThanOrEqualTo($fiveMinutesBefore)) {
+                        $status = 'active';
+                    }
+
+                    $date = $carbonDate->format('Y-m-d H:i');
+                }catch (\Exception $e){
+
                 }
 
-                $date = $carbonDate->format('Y-m-d H:i');
-            }catch (\Exception $e){
-
+                $data[$key] = [
+                    'id' => $key,
+                    'quality_criteria' => $measuringPoints[$key] ?? "-",
+                    $report->Unit => (string)  max(round($report->Value, 2), 0),
+                    'status' => $status,
+                    'update_time' => $date
+                ];
             }
-
-            $data[$key] = [
-                'id' => $report->IDsensor,
-                'quality_criteria' => $idSensors[$report->IDsensor] ?? "-",
-                'unit' => $report->Unit,
-                'status' => $status,
-                'measured_value' => (string)  max(round($report->Value, 2), 0),
-                'update_time' => $date
-            ];
         }
 
         return response()->json([
