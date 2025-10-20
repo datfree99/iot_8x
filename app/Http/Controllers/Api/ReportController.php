@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 class ReportController extends Controller
 {
-     public function monitorPressure(Request $request)
+    public function monitorPressure(Request $request)
     {
         $factory = $request->user()->factory;
         $type = ['m3/h', 'm3', 'bar'];
@@ -270,7 +270,7 @@ class ReportController extends Controller
 
     public function quantityMonitoringDetail(Request $request)
     {
-        $validate = \Validator::make($request->input(),[
+        $validate = \Validator::make($request->input(), [
             'measuring_point' => 'required',
             'date' => 'required|date_format:Y-m-d'
         ], [
@@ -279,7 +279,7 @@ class ReportController extends Controller
             'date.date_format' => 'Sai định dạng'
         ]);
 
-        if ($validate->fails()){
+        if ($validate->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => $validate->errors()
@@ -292,7 +292,7 @@ class ReportController extends Controller
         $date = Carbon::createFromFormat('Y-m-d', $request->get('date'));
         $start = $date->format('Y-m-d 00:00:00');
         $end = $date->format('Y-m-d 23:59:59');
-        $tableSensor = $factory->IDnhamay. "listsensor";
+        $tableSensor = $factory->IDnhamay . "listsensor";
 
         $type = ['mg/l', 'NTU', 'PH'];
         $sensors = DB::connection('sqlsrv')
@@ -339,21 +339,21 @@ class ReportController extends Controller
 
             $keyGroup = strtolower($key);
 
-            $groupTimes  = $result->groupBy(function ($item) {
+            $groupTimes = $result->groupBy(function ($item) {
                 return substr($item->Date, 0, 16);
             });
             $i = 0;
 
-            $data[$keyGroup] = $groupTimes->map(function ($item) use (&$mainX, &$i){
+            $data[$keyGroup] = $groupTimes->map(function ($item) use (&$mainX, &$i) {
                 $index = $i++;
                 $firstItem = $item->first();
                 $date = Carbon::createFromFormat('Y-m-d H:i:s.u', $firstItem->Date);
 
                 $keyMainX = $date->copy()->startOfHour()->format('H:i');
 
-                if(!isset($mainX[$keyMainX])) {
+                if (!isset($mainX[$keyMainX])) {
                     $mainX[$keyMainX] = [
-                        'key' =>  $index,
+                        'key' => $index,
                         'value' => (int) $date->format('H')
                     ];
                 }
@@ -362,7 +362,8 @@ class ReportController extends Controller
                     'key' => $index,
                     'value' => max(round($item->max('Value'), 2), 0)
                 ];
-            })->values();;
+            })->values();
+            ;
         }
 
         $data['main_x'] = array_values($mainX);
@@ -378,55 +379,93 @@ class ReportController extends Controller
         $factory = $request->user()->factory;
 
         $type = ['mg/l', 'NTU', 'PH'];
+
+        //-----------------------------
+        // Lấy danh sách cảm biến
         $sensors = $this->getSensor($factory, $type);
+        if ($sensors->isEmpty()) {
+            return response()->json([
+                'success' => true,
+                'data' => []
+            ]);
+        }
+        $lastItem = $sensors->pop();
+        $sensors->prepend($lastItem);
 
-        $idSensors = $sensors->pluck('Location', 'IDsensor')->toArray();
-        $idPoints = $sensors->pluck('IDthietbi')->toArray();
-        $idDevices = $sensors->pluck('IDthietbi','IDsensor')->toArray();
-        $measuringPoints = $this->getMeasuringPoint($factory, array_unique($idPoints));
-        $keySensor = array_keys($idSensors);
+        $idPoints = $sensors->pluck('IDthietbi')->unique()->toArray();
+        $measuringPoints = $this->getMeasuringPoint($factory, $idPoints);
 
-        $reports = $this->getData($factory, $keySensor, $type);
+        $idSensors = $sensors->pluck('IDsensor')->toArray();
+         // Lấy dữ liệu chính trong vòng 10 phút gần nhất
+        $reports = $this->getData($factory, $idSensors, $type);
+
+        // Chuẩn bị dữ liệu đầu ra
         $data = [];
-        foreach ($reports as $report) {
-            if (!isset($idDevices[$report->IDsensor])){
-                continue;
-            }
-            $key = $idDevices[$report->IDsensor];
+          foreach ($sensors as $sensor) {
+            $key = $sensor->IDthietbi;
+            try {
+                // Tên điểm đo
+                $data[$key]['name'] = $measuringPoints[$key] ?? '-';
 
-            $unit = str_replace("/", '', strtolower($report->Unit));
-            if (isset($data[$key])) {
-                $data[$key][$unit] = (string)  max(round($report->Value, 2), 0);
-            }else {
-                $date = "-";
-                $status = 'inactive';
-                try {
-                    $carbonDate = Carbon::createFromFormat('Y-m-d H:i:s.u', $report->Date);
-                    $currentDate = Carbon::now();
-                    $fiveMinutesBefore = $currentDate->copy()->subMinutes(5);
-                    if ($carbonDate->lessThan($currentDate) && $carbonDate->greaterThanOrEqualTo($fiveMinutesBefore)) {
-                        $status = 'active';
+                // Lấy dữ liệu từ `reports`
+                $value = $reports[$sensor->IDsensor] ?? null;
+
+                if ($value) {
+                    try {
+                        $carbonDate = Carbon::parse($value->Date)->format('Y-m-d H:i');
+                        $data[$key]['date'] = $carbonDate;
+                    } catch (\Exception $e) {
+                        // $data[$key]['date'] = "-";
                     }
 
-                    $date = $carbonDate->format('Y-m-d H:i');
-                }catch (\Exception $e){
+                    try {
+                        // Lưu giá trị theo đơn vị đo
+                        $data[$key][$value->Unit] = max(round($value->Value, 2), 0);
+                    } catch (\Exception $e) {
 
+                    }
                 }
-
-                $data[$key] = [
-                    'id' => (int) $key,
-                    'quality_criteria' => $measuringPoints[$key] ?? "-",
-                    $unit => (string)  max(round($report->Value, 2), 0),
-                    'status' => $status,
-                    'update_time' => $date
-                ];
+            } catch (\Exception $e) {
+                //throw $th;
             }
+
+        }
+
+        // Tạo báo cáo
+        $reports = [];
+        $currentDate = Carbon::now();
+        foreach ($data as $key => $item) {
+            $status = 'inactive';
+            try {
+                $dateToCheck = Carbon::parse($item['date'] ?? null);
+                $fiveMinutesBefore = $currentDate->copy()->subMinutes(5);
+                if ($dateToCheck->between($fiveMinutesBefore, $currentDate)) {
+                    $status = 'active';
+                }
+            } catch (\Exception $e) {
+                // Giữ trạng thái là inactive nếu lỗi
+            }
+
+            $reports[] = [
+                'id' => $key,
+                'quality_criteria' => (string) ($item['name'] ?? '-'),
+                'status' => $status,
+                'update_time' => (string) ($item['date'] ?? '-'),
+                'mgl' => (string) ($item['mg/l'] ?? '-'),
+                'ntu' => (string) ($item['NTU'] ?? '-'),
+                'ph' => (string) ($item['PH'] ?? '-'),
+
+            ];
         }
 
         return response()->json([
             'success' => true,
-            'data' => array_values($data)
+            'data' => $reports
         ]);
+        /////--------------------------------------------
+
+
+
     }
     public function sensor(Request $request)
     {
